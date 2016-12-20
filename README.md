@@ -1,0 +1,2 @@
+# kusanagi
+Golang chess engine
