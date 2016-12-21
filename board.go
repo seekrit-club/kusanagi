@@ -211,8 +211,12 @@ func GetPiece(b byte) byte {
 	return b & 0x07
 }
 
+func GetSide(b byte) byte {
+	return b & BLACK
+}
+
 func IsBlack(b byte) bool {
-	return b&BLACK == BLACK
+	return GetSide(b) == BLACK
 }
 
 func OnBoard(i int) bool {

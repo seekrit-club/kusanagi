@@ -10,5 +10,14 @@ func main() {
 		fmt.Println(err.Error())
 		return
 	}
+	board.Data[41] = QUEEN
+	fmt.Print(PrintBoard(board))
+	moves := MoveGen(board)
+	fmt.Println(moves)
+	MakeMove(board, &moves[0])
+	fmt.Print(PrintBoard(board))
+	moves = MoveGen(board)
+	fmt.Println(moves)
+	MakeMove(board, &moves[0])
 	fmt.Print(PrintBoard(board))
 }
