@@ -41,6 +41,7 @@ const (
 type Board struct {
 	/* Mailbox style, 10x12 board. */
 	Data [120]byte
+	ToMove byte
 }
 
 const (
@@ -67,36 +68,53 @@ func Parse(fen string) (*Board, error) {
 	ClearBoard(b)
 	rank := 7
 	file := 0
+	stage := 0
 	for _, runeValue := range fen {
-		if runeValue >= '1' && runeValue <= '8' {
-			inc, _ := strconv.Atoi(string(runeValue))
-			file += inc
-		} else if runeValue == '/' {
-			rank -= 1
-			file = 0
-		} else if runeValue == ' ' {
-			return b, nil
-		} else {
-			switch unicode.ToUpper(runeValue) {
-			case 'P':
-				b.Data[CartesianToIndex(file, rank)] |= PAWN
-			case 'N':
-				b.Data[CartesianToIndex(file, rank)] |= KNIGHT
-			case 'B':
-				b.Data[CartesianToIndex(file, rank)] |= BISHOP
-			case 'R':
-				b.Data[CartesianToIndex(file, rank)] |= ROOK
-			case 'Q':
-				b.Data[CartesianToIndex(file, rank)] |= QUEEN
-			case 'K':
-				b.Data[CartesianToIndex(file, rank)] |= KING
-			default:
-				return nil, errors.New("Unexpected character in FEN")
+		switch stage {
+		case 0:
+			/* Fill the data */
+			if runeValue >= '1' && runeValue <= '8' {
+				inc, _ := strconv.Atoi(string(runeValue))
+				file += inc
+			} else if runeValue == '/' {
+				rank -= 1
+				file = 0
+			} else if runeValue == ' ' {
+				stage++
+			} else {
+				switch unicode.ToUpper(runeValue) {
+				case 'P':
+					b.Data[CartesianToIndex(file, rank)] |= PAWN
+				case 'N':
+					b.Data[CartesianToIndex(file, rank)] |= KNIGHT
+				case 'B':
+					b.Data[CartesianToIndex(file, rank)] |= BISHOP
+				case 'R':
+					b.Data[CartesianToIndex(file, rank)] |= ROOK
+				case 'Q':
+					b.Data[CartesianToIndex(file, rank)] |= QUEEN
+				case 'K':
+					b.Data[CartesianToIndex(file, rank)] |= KING
+				default:
+					return nil, errors.New("Unexpected character in board data")
+				}
+				if unicode.IsLower(runeValue) {
+					b.Data[CartesianToIndex(file, rank)] |= BLACK
+				}
+				file += 1
 			}
-			if unicode.IsLower(runeValue) {
-				b.Data[CartesianToIndex(file, rank)] |= BLACK
+		case 1:
+			/* Get who's to play next */
+			switch runeValue {
+				case 'w':
+				b.ToMove = WHITE
+				case 'b':
+				b.ToMove = BLACK
+				case ' ':
+				stage++
+				default:
+				return nil, errors.New("Unexpected character for active colour")
 			}
-			file += 1
 		}
 	}
 	return b, nil
