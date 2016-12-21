@@ -5,7 +5,10 @@ import (
 )
 
 func main() {
-	board := new(Board)
-	InitBoard(board)
+	board, err := Parse(START)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 	fmt.Print(PrintBoard(board))
 }

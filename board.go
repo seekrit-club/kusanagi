@@ -1,7 +1,10 @@
 package main
 
 import (
+	"errors"
+	"strconv"
 	"strings"
+	"unicode"
 )
 
 /*
@@ -45,6 +48,8 @@ const (
 	H8 int = 98
 )
 
+const START string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+
 func ClearBoard(b *Board) {
 	for i := 0; i < 120; i++ {
 		if i < A1 || i > H8 {
@@ -57,12 +62,44 @@ func ClearBoard(b *Board) {
 	}
 }
 
-func InitBoard(b *Board) {
+func Parse(fen string) (*Board, error) {
+	b := new(Board)
 	ClearBoard(b)
-	b.Data[A1] = KING | WHITE
-	b.Data[A1+10] = PAWN | WHITE
-	b.Data[H8] = KING | BLACK
-	b.Data[H8-1] = ROOK | BLACK
+	rank := 7
+	file := 0
+	for _, runeValue := range fen {
+		if runeValue >= '1' && runeValue <= '8' {
+			inc, _ := strconv.Atoi(string(runeValue))
+			file += inc
+		} else if runeValue == '/' {
+			rank -= 1
+			file = 0
+		} else if runeValue == ' ' {
+			return b, nil
+		} else {
+			switch unicode.ToUpper(runeValue) {
+			case 'P':
+				b.Data[CartesianToIndex(file, rank)] |= PAWN
+			case 'N':
+				b.Data[CartesianToIndex(file, rank)] |= KNIGHT
+			case 'B':
+				b.Data[CartesianToIndex(file, rank)] |= BISHOP
+			case 'R':
+				b.Data[CartesianToIndex(file, rank)] |= ROOK
+			case 'Q':
+				b.Data[CartesianToIndex(file, rank)] |= QUEEN
+			case 'K':
+				b.Data[CartesianToIndex(file, rank)] |= KING
+			default:
+				return nil, errors.New("Unexpected character in FEN")
+			}
+			if unicode.IsLower(runeValue) {
+				b.Data[CartesianToIndex(file, rank)] |= BLACK
+			}
+			file += 1
+		}
+	}
+	return b, nil
 }
 
 func PrintBoard(b *Board) string {
