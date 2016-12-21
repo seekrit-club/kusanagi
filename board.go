@@ -62,12 +62,10 @@ const START string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 func ClearBoard(b *Board) {
 	for i := 0; i < 120; i++ {
-		if i < A1 || i > H8 {
-			b.Data[i] = OFFBOARD
-		} else if i%10 == 0 || i%10 == 9 {
-			b.Data[i] = OFFBOARD
-		} else {
+		if OnBoard(i) {
 			b.Data[i] = ONBOARD
+		} else {
+			b.Data[i] = OFFBOARD
 		}
 	}
 }
@@ -218,5 +216,5 @@ func IsBlack(b byte) bool {
 }
 
 func OnBoard(i int) bool {
-	return i >= A1 && i <= H8
+	return i >= A1 && i <= H8 && !(i%10 == 0 || i%10 == 9)
 }
