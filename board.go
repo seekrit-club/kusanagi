@@ -38,10 +38,19 @@ const (
 	OFFBOARD byte = 0x10
 )
 
+const (
+	CASTLEWK byte = 0x01
+	CASTLEWQ byte = 0x02
+	CASTLEBK byte = 0x04
+	CASTLEBQ byte = 0x08
+)
+
 type Board struct {
 	/* Mailbox style, 10x12 board. */
-	Data   [120]byte
-	ToMove byte
+	Data      [120]byte
+	ToMove    byte
+	Castle    byte
+	EnPassant int
 }
 
 const (
@@ -68,6 +77,8 @@ func Parse(fen string) (*Board, error) {
 	ClearBoard(b)
 	rank := 7
 	file := 0
+	eprank := -1
+	epfile := -1
 	stage := 0
 	for _, runeValue := range fen {
 		switch stage {
@@ -114,6 +125,35 @@ func Parse(fen string) (*Board, error) {
 				stage++
 			default:
 				return nil, errors.New("Unexpected character for active colour")
+			}
+		case 2:
+			/* Castling */
+			switch runeValue {
+			case 'K':
+				b.Castle |= CASTLEWK
+			case 'Q':
+				b.Castle |= CASTLEWQ
+			case 'k':
+				b.Castle |= CASTLEBK
+			case 'q':
+				b.Castle |= CASTLEBQ
+			case ' ':
+				stage++
+			default:
+				return nil, errors.New("Unexpected character for castling")
+			}
+		case 3:
+			/* En-passant */
+			if runeValue >= '1' && runeValue <= '8' {
+				eprank, _ = strconv.Atoi(string(runeValue))
+				eprank--
+			} else if runeValue >= 'a' && runeValue <= 'h' {
+				epfile = int(runeValue - 'a')
+			} else if runeValue == ' ' {
+				b.EnPassant = CartesianToIndex(epfile, eprank)
+				stage++
+			} else if runeValue != '-' {
+				return nil, errors.New("Unexpected character for en passant")
 			}
 		}
 	}
@@ -175,4 +215,8 @@ func GetPiece(b byte) byte {
 
 func IsBlack(b byte) bool {
 	return b&BLACK == BLACK
+}
+
+func OnBoard(i int) bool {
+	return i >= A1 && i <= H8
 }

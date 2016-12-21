@@ -4,6 +4,38 @@ import (
 	"testing"
 )
 
+func TestParseLoadEnPassantNone(t *testing.T) {
+	board, err := Parse(START)
+	if err != nil {
+		t.FailNow()
+	}
+	if OnBoard(board.EnPassant) {
+		t.Fail()
+	}
+}
+
+func TestParseLoadEnPassantA1(t *testing.T) {
+	/* This is obviously a bogus position, but we're more interested in
+	 * testing the parser here than accurate positions. */
+	board, err := Parse("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq a1 0 2")
+	if err != nil {
+		t.FailNow()
+	}
+	if board.EnPassant != A1 {
+		t.Fail()
+	}
+}
+
+func TestParseLoadEnPassantH8(t *testing.T) {
+	board, err := Parse("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq h8 0 2")
+	if err != nil {
+		t.FailNow()
+	}
+	if board.EnPassant != H8 {
+		t.Fail()
+	}
+}
+
 func TestParseToMoveForStart(t *testing.T) {
 	board, err := Parse(START)
 	if err != nil {
