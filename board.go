@@ -40,7 +40,7 @@ const (
 
 type Board struct {
 	/* Mailbox style, 10x12 board. */
-	Data [120]byte
+	Data   [120]byte
 	ToMove byte
 }
 
@@ -106,13 +106,13 @@ func Parse(fen string) (*Board, error) {
 		case 1:
 			/* Get who's to play next */
 			switch runeValue {
-				case 'w':
+			case 'w':
 				b.ToMove = WHITE
-				case 'b':
+			case 'b':
 				b.ToMove = BLACK
-				case ' ':
+			case ' ':
 				stage++
-				default:
+			default:
 				return nil, errors.New("Unexpected character for active colour")
 			}
 		}

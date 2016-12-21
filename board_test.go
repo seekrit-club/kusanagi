@@ -30,8 +30,8 @@ func TestParseDataForSicilian(t *testing.T) {
 		t.FailNow()
 	}
 	if PrintBoard(board) != "rnbqkbnr\npp.ppppp\n........\n..p.....\n....P...\n........\nPPPP.PPP\nRNBQKBNR\n" {
-			t.Fail()
-		}
+		t.Fail()
+	}
 }
 
 func TestParseDataForStart(t *testing.T) {
@@ -40,6 +40,6 @@ func TestParseDataForStart(t *testing.T) {
 		t.FailNow()
 	}
 	if PrintBoard(board) != "rnbqkbnr\npppppppp\n........\n........\n........\n........\nPPPPPPPP\nRNBQKBNR\n" {
-			t.Fail()
-		}
+		t.Fail()
+	}
 }
