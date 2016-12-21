@@ -67,13 +67,18 @@ func InitBoard(b *Board) {
 
 func PrintBoard(b *Board) string {
 	retval := ""
-	for i := 0; i < 120; i++ {
-		retval += ByteToString(b.Data[i])
-		if i%10 == 0 && i > A1 && i < H8 {
-			retval += "\n"
+	for rank := 7; rank >= 0; rank-- {
+		for file := 0; file < 8; file++ {
+			retval +=
+				ByteToString(b.Data[CartesianToIndex(file, rank)])
 		}
+		retval += "\n"
 	}
 	return retval
+}
+
+func CartesianToIndex(file, rank int) int {
+	return 21 + (10 * rank) + file
 }
 
 func ByteToString(b byte) string {
