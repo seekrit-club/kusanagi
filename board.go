@@ -1,5 +1,9 @@
 package main
 
+import (
+	"strings"
+)
+
 /*
 WARNING: HACK APPROACHING!
 
@@ -55,6 +59,10 @@ func ClearBoard(b *Board) {
 
 func InitBoard(b *Board) {
 	ClearBoard(b)
+	b.Data[A1] = KING | WHITE
+	b.Data[A1+10] = PAWN | WHITE
+	b.Data[H8] = KING | BLACK
+	b.Data[H8-1] = ROOK | BLACK
 }
 
 func PrintBoard(b *Board) string {
@@ -69,11 +77,42 @@ func PrintBoard(b *Board) string {
 }
 
 func ByteToString(b byte) string {
-	if b&OFFBOARD != 0 {
+	if ByteIsOffboard(b) {
 		return ""
 	}
-	if b == EMPTY {
+	retval := ""
+	switch GetPiece(b) {
+	case EMPTY:
 		return "."
+	case PAWN:
+		retval = "P"
+	case KNIGHT:
+		retval = "N"
+	case BISHOP:
+		retval = "B"
+	case ROOK:
+		retval = "R"
+	case QUEEN:
+		retval = "Q"
+	case KING:
+		retval = "K"
+	default:
+		return "?"
 	}
-	return "?"
+	if IsBlack(b) {
+		return strings.ToLower(retval)
+	}
+	return retval
+}
+
+func ByteIsOffboard(b byte) bool {
+	return b&OFFBOARD == OFFBOARD
+}
+
+func GetPiece(b byte) byte {
+	return b & 0x07
+}
+
+func IsBlack(b byte) bool {
+	return b&BLACK == BLACK
 }
