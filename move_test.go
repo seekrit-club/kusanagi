@@ -32,3 +32,17 @@ func TestMoveGenBlackPawnPush(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestMakeMovePawnPush(t *testing.T) {
+	board, err := Parse(START)
+	if err != nil {
+		t.FailNow()
+	}
+	to := byte(CartesianToIndex(0, 1))
+	from := byte(CartesianToIndex(0, 1))
+	move := Move{from, to, MoveQuiet, EMPTY, 0}
+	MakeMove(board, &move)
+	if GetPiece(board.Data[from]) != EMPTY && GetPiece(board.Data[to]) != PAWN {
+		t.Fail()
+	}
+}
