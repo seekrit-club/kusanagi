@@ -117,3 +117,24 @@ func TestByteToStringGivenInvalidPiece(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestIndexToCartesian(t *testing.T) {
+	x, y := IndexToCartesian(A1)
+	if x != 0 && y != 0 {
+		t.Fail()
+	}
+}
+
+func TestCartesianToAlgebraic(t *testing.T) {
+	x := CartesianToAlgebraic(0, 0)
+	if x != "a1" {
+		t.Fail()
+	}
+}
+
+func TestIndexToAlgebraic(t *testing.T) {
+	x := IndexToAlgebraic(A1)
+	if x != "a1" {
+		t.Fail()
+	}
+}
