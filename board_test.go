@@ -103,3 +103,17 @@ func TestParseInvalidEnPassant(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestByteToStringGivenOffboard(t *testing.T) {
+	s := ByteToString(OFFBOARD)
+	if s != "" {
+		t.Fail()
+	}
+}
+
+func TestByteToStringGivenInvalidPiece(t *testing.T) {
+	s := ByteToString(KING + 1)
+	if s != "?" {
+		t.Fail()
+	}
+}
