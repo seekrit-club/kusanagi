@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"unicode"
@@ -223,4 +224,21 @@ func IsBlack(b byte) bool {
 
 func OnBoard(i int) bool {
 	return i >= A1 && i <= H8 && !(i%10 == 0 || i%10 == 9)
+}
+
+func IndexToCartesian(index int) (int, int) {
+	var file, rank int
+	file = (index % 10) - 1
+	rank = (index / 10) - 2
+	return file, rank
+}
+
+func CartesianToAlgebraic(file, rank int) string {
+	afile := rune(int('a') + file)
+	arank := rank + 1
+	return fmt.Sprintf("%c%d", afile, arank)
+}
+
+func IndexToAlgebraic(i int) string {
+	return CartesianToAlgebraic(IndexToCartesian(i))
 }
