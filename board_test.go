@@ -75,3 +75,31 @@ func TestParseDataForStart(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestParseInvalidData(t *testing.T) {
+	_, err := Parse("rnb%kbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2")
+	if err == nil {
+		t.Fail()
+	}
+}
+
+func TestParseInvalidActiveColor(t *testing.T) {
+	_, err := Parse("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR o KQkq c6 0 2")
+	if err == nil {
+		t.Fail()
+	}
+}
+
+func TestParseInvalidCastling(t *testing.T) {
+	_, err := Parse("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w %Qkq c6 0 2")
+	if err == nil {
+		t.Fail()
+	}
+}
+
+func TestParseInvalidEnPassant(t *testing.T) {
+	_, err := Parse("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq z7 0 2")
+	if err == nil {
+		t.Fail()
+	}
+}
