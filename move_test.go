@@ -38,11 +38,26 @@ func TestMakeMovePawnPush(t *testing.T) {
 	if err != nil {
 		t.FailNow()
 	}
-	to := byte(CartesianToIndex(0, 1))
+	to := byte(CartesianToIndex(0, 2))
 	from := byte(CartesianToIndex(0, 1))
 	move := Move{from, to, MoveQuiet, EMPTY, 0}
 	MakeMove(board, &move)
-	if GetPiece(board.Data[from]) != EMPTY && GetPiece(board.Data[to]) != PAWN {
+	if GetPiece(board.Data[from]) != EMPTY || GetPiece(board.Data[to]) != PAWN {
+		t.Fail()
+	}
+}
+
+func TestMakeMovePawnDoublePush(t *testing.T) {
+	board, err := Parse(START)
+	if err != nil {
+		t.FailNow()
+	}
+	to := byte(CartesianToIndex(0, 3))
+	from := byte(CartesianToIndex(0, 1))
+	move := Move{from, to, MoveDoublePush, EMPTY, 0}
+	MakeMove(board, &move)
+	if GetPiece(board.Data[from]) != EMPTY || GetPiece(board.Data[to]) !=
+		PAWN || board.EnPassant != CartesianToIndex(0, 2) {
 		t.Fail()
 	}
 }

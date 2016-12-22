@@ -60,6 +60,8 @@ const (
 
 const START string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
+const INVALID int = 0
+
 func ClearBoard(b *Board) {
 	for i := 0; i < 120; i++ {
 		if OnBoard(i) {
