@@ -98,8 +98,22 @@ func TestParseInvalidCastling(t *testing.T) {
 }
 
 func TestParseInvalidEnPassant(t *testing.T) {
-	_, err := Parse("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq z7 0 2")
+	_, err := Parse("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq z 0 2")
 	if err == nil {
+		t.Fail()
+	}
+}
+
+func TestParseNoCastling(t *testing.T) {
+	_, err := Parse("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w - c6 0 2")
+	if err != nil {
+		t.Fail()
+	}
+}
+
+func TestParseNoEnPassant(t *testing.T) {
+	_, err := Parse("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
+	if err != nil {
 		t.Fail()
 	}
 }

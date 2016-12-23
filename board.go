@@ -130,6 +130,8 @@ func Parse(fen string) (*Board, error) {
 		case 2:
 			/* Castling */
 			switch runeValue {
+			case '-':
+				/* Do nothing */
 			case 'K':
 				b.Castle |= CASTLEWK
 			case 'Q':
