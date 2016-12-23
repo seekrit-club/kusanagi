@@ -18,6 +18,7 @@ var Slide [8]bool = [8]bool{false, false, false, true, true, true, false, false}
 const (
 	MoveQuiet byte = iota
 	MoveDoublePush
+	MoveCapture
 )
 
 type Move struct {
@@ -61,12 +62,18 @@ func quietmove(b *Board, i int, retval []Move) []Move {
 		from := i
 		for {
 			to := from + Vector[piece][dir]
-			if GetPiece(b.Data[to]) == EMPTY && b.Data[to] != OFFBOARD {
-				retval = append(retval, Move{byte(i),
-					byte(to), MoveQuiet, EMPTY, 0})
-				if Slide[piece] {
-					from = to
-				} else {
+			if b.Data[to] != OFFBOARD {
+				if GetPiece(b.Data[to]) == EMPTY {
+					retval = append(retval, Move{byte(i),
+						byte(to), MoveQuiet, EMPTY, 0})
+					if Slide[piece] {
+						from = to
+					} else {
+						break
+					}
+				} else if GetSide(b.Data[to]) != b.ToMove {
+					retval = append(retval, Move{byte(i),
+						byte(to), MoveCapture, EMPTY, 0})
 					break
 				}
 			} else {
@@ -111,5 +118,5 @@ func MakeMove(b *Board, m *Move) {
 
 func (m Move) String() string {
 	return fmt.Sprint("{From: ", IndexToAlgebraic(int(m.From)), " to: ",
-		IndexToAlgebraic(int(m.To)), "}")
+		IndexToAlgebraic(int(m.To)), " type: ", m.Kind, "}")
 }
