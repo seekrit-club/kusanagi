@@ -50,15 +50,16 @@ func pawnmove(b *Board, i int, retval []Move) []Move {
 				byte(DoublePush), MoveDoublePush, EMPTY, 0})
 		}
 	}
-	if OnBoard(PawnPush+1) && GetPiece(b.Data[PawnPush+1]) != EMPTY &&
-		GetSide(b.Data[PawnPush+1]) != b.ToMove {
+	pawncap(b, i, retval, PawnPush-1)
+	pawncap(b, i, retval, PawnPush+1)
+	return retval
+}
+
+func pawncap(b *Board, i int, retval []Move, place int) []Move {
+	if OnBoard(place) && GetPiece(b.Data[place]) != EMPTY &&
+		GetSide(b.Data[place]) != b.ToMove {
 		retval = append(retval, Move{byte(i),
-			byte(PawnPush + 1), MoveCapture, EMPTY, 0})
-	}
-	if OnBoard(PawnPush-1) && GetPiece(b.Data[PawnPush-1]) != EMPTY &&
-		GetSide(b.Data[PawnPush-1]) != b.ToMove {
-		retval = append(retval, Move{byte(i),
-			byte(PawnPush - 1), MoveCapture, EMPTY, 0})
+			byte(place), MoveCapture, EMPTY, 0})
 	}
 	return retval
 }
