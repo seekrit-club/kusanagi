@@ -180,3 +180,26 @@ func TestMoveGenBlackPawnCap(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestMoveGenSliderCap(t *testing.T) {
+	board, err := Parse("4k3/8/8/8/1r1P4/8/8/4K3 b - - 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	moves := MoveGen(board)
+	if !IsMoveInMoveList(t, moves, byte(CartesianToIndex(1, 3)), byte(CartesianToIndex(3, 3)), MoveCapture) {
+		t.Fail()
+	}
+}
+
+func TestMoveGenNonSliderCap(t *testing.T) {
+	board, err := Parse("4k3/8/2n5/8/3P4/8/8/4K3 b - - 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	moves := MoveGen(board)
+	t.Log(moves)
+	if !IsMoveInMoveList(t, moves, byte(CartesianToIndex(2, 5)), byte(CartesianToIndex(3, 3)), MoveCapture) {
+		t.Fail()
+	}
+}
