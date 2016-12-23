@@ -75,6 +75,8 @@ func quietmove(b *Board, i int, retval []Move) []Move {
 					retval = append(retval, Move{byte(i),
 						byte(to), MoveCapture, EMPTY, 0})
 					break
+				} else {
+					break
 				}
 			} else {
 				break
