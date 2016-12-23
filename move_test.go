@@ -48,3 +48,33 @@ func TestMakeMoveBlackPawnDoublePush(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestMakeMoveWhitePawnCapture(t *testing.T) {
+	board, err := Parse("8/8/8/3p4/4P3/8/8/8 w - - 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	to := byte(CartesianToIndex(3, 4))
+	from := byte(CartesianToIndex(4, 3))
+	move := Move{from, to, MoveCapture, EMPTY, 0}
+	MakeMove(board, &move)
+	if GetPiece(board.Data[from]) != EMPTY || GetPiece(board.Data[to]) !=
+		PAWN || GetSide(board.Data[to]) != WHITE {
+		t.Fail()
+	}
+}
+
+func TestMakeMoveBlackPawnCapture(t *testing.T) {
+	board, err := Parse("8/8/8/3p4/4P3/8/8/8 b - - 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	to := byte(CartesianToIndex(4, 3))
+	from := byte(CartesianToIndex(3, 4))
+	move := Move{from, to, MoveCapture, EMPTY, 0}
+	MakeMove(board, &move)
+	if GetPiece(board.Data[from]) != EMPTY || GetPiece(board.Data[to]) !=
+		PAWN || GetSide(board.Data[to]) != BLACK {
+		t.Fail()
+	}
+}
