@@ -50,8 +50,8 @@ func pawnmove(b *Board, i int, retval []Move) []Move {
 				byte(DoublePush), MoveDoublePush, EMPTY, 0})
 		}
 	}
-	pawncap(b, i, retval, PawnPush-1)
-	pawncap(b, i, retval, PawnPush+1)
+	retval = pawncap(b, i, retval, PawnPush-1)
+	retval = pawncap(b, i, retval, PawnPush+1)
 	return retval
 }
 
