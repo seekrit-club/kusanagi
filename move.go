@@ -64,6 +64,39 @@ func pawncap(b *Board, i int, retval []Move, place int) []Move {
 	return retval
 }
 
+func squareattacked(b *Board, i int) bool {
+	var PawnPush int
+	if b.ToMove == BLACK {
+		PawnPush = i + 10
+	} else {
+		PawnPush = i - 10
+	}
+	if (GetSide(b.Data[PawnPush-1]) != b.ToMove && GetPiece(b.Data[PawnPush-1]) == PAWN) || (GetSide(b.Data[PawnPush+1]) != b.ToMove && GetPiece(b.Data[PawnPush+1]) == PAWN) {
+		return true
+	}
+	for dir := 0; dir < 8; dir++ {
+		if Vector[QUEEN][dir] == 0 {
+			break
+		}
+		from := i
+		for {
+			to := from + Vector[QUEEN][dir]
+			piece := GetPiece(b.Data[to])
+			if b.Data[to] == OFFBOARD || (piece != EMPTY && GetSide(b.Data[to]) == b.ToMove) {
+				break
+			} else if GetPiece(b.Data[to]) == QUEEN {
+				return true
+			} else if piece == ROOK && Vector[QUEEN][dir] == 10 || Vector[QUEEN][dir] == -10 || Vector[QUEEN][dir] == 1 || Vector[QUEEN][dir] == -1 {
+				return true
+			} else if piece == BISHOP && Vector[QUEEN][dir] == 1 || Vector[QUEEN][dir] == -1 || Vector[QUEEN][dir] == 9 || Vector[QUEEN][dir] == -9 {
+				return true
+			}
+			from = to
+		}
+	}
+	return false
+}
+
 func quietmove(b *Board, i int, retval []Move) []Move {
 	piece := GetPiece(b.Data[i])
 	for dir := 0; dir < 8; dir++ {

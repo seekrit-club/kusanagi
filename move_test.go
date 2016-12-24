@@ -217,3 +217,53 @@ func tperft(t *testing.T, depth int, expected uint64) {
 		t.FailNow()
 	}
 }
+
+func TestSquareAttackedByPawn(t *testing.T) {
+	board, err := Parse("4k3/8/8/8/8/8/3p4/4K3 w - - 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	if !squareattacked(board, CartesianToIndex(0, 4)) {
+		t.FailNow()
+	}
+}
+
+func TestSquareAttackedByQueenFile(t *testing.T) {
+	board, err := Parse("4k3/8/8/8/8/4q3/8/4K3 w - - 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	if !squareattacked(board, CartesianToIndex(0, 4)) {
+		t.FailNow()
+	}
+}
+
+func TestSquareAttackedByQueenDiag(t *testing.T) {
+	board, err := Parse("4k3/8/8/8/1q6/8/8/4K3 w - - 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	if !squareattacked(board, CartesianToIndex(0, 4)) {
+		t.FailNow()
+	}
+}
+
+func TestSquareAttackedByRook(t *testing.T) {
+	board, err := Parse("4k3/8/8/8/8/4r3/8/4K3 w - - 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	if !squareattacked(board, CartesianToIndex(0, 4)) {
+		t.FailNow()
+	}
+}
+
+func TestSquareAttackedByBishop(t *testing.T) {
+	board, err := Parse("4k3/8/8/8/1b6/8/8/4K3 w - - 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	if !squareattacked(board, CartesianToIndex(0, 4)) {
+		t.FailNow()
+	}
+}
