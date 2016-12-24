@@ -223,7 +223,7 @@ func TestSquareNotAttacked(t *testing.T) {
 	if err != nil {
 		t.FailNow()
 	}
-	if squareattacked(board, CartesianToIndex(4, 4)) {
+	if squareattacked(board, CartesianToIndex(4, 4), BLACK) {
 		t.FailNow()
 	}
 }
@@ -233,7 +233,7 @@ func TestSquareAttackedByWhitePawn(t *testing.T) {
 	if err != nil {
 		t.FailNow()
 	}
-	if !squareattacked(board, CartesianToIndex(4, 7)) {
+	if !squareattacked(board, CartesianToIndex(4, 7), WHITE) {
 		t.FailNow()
 	}
 }
@@ -243,7 +243,7 @@ func TestSquareAttackedByBlackPawn(t *testing.T) {
 	if err != nil {
 		t.FailNow()
 	}
-	if !squareattacked(board, CartesianToIndex(4, 0)) {
+	if !squareattacked(board, CartesianToIndex(4, 0), BLACK) {
 		t.FailNow()
 	}
 }
@@ -253,7 +253,7 @@ func TestSquareAttackedByQueenFile(t *testing.T) {
 	if err != nil {
 		t.FailNow()
 	}
-	if !squareattacked(board, CartesianToIndex(4, 0)) {
+	if !squareattacked(board, CartesianToIndex(4, 0), BLACK) {
 		t.FailNow()
 	}
 }
@@ -263,7 +263,7 @@ func TestSquareAttackedByQueenDiag(t *testing.T) {
 	if err != nil {
 		t.FailNow()
 	}
-	if !squareattacked(board, CartesianToIndex(4, 0)) {
+	if !squareattacked(board, CartesianToIndex(4, 0), BLACK) {
 		t.FailNow()
 	}
 }
@@ -273,7 +273,7 @@ func TestSquareAttackedByRook(t *testing.T) {
 	if err != nil {
 		t.FailNow()
 	}
-	if !squareattacked(board, CartesianToIndex(4, 0)) {
+	if !squareattacked(board, CartesianToIndex(4, 0), BLACK) {
 		t.FailNow()
 	}
 }
@@ -283,7 +283,7 @@ func TestSquareAttackedByBishop(t *testing.T) {
 	if err != nil {
 		t.FailNow()
 	}
-	if !squareattacked(board, CartesianToIndex(4, 0)) {
+	if !squareattacked(board, CartesianToIndex(4, 0), BLACK) {
 		t.FailNow()
 	}
 }
