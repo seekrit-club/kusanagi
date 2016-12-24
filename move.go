@@ -133,3 +133,22 @@ func (m Move) String() string {
 	return fmt.Sprint("{From: ", IndexToAlgebraic(int(m.From)), " to: ",
 		IndexToAlgebraic(int(m.To)), " type: ", m.Kind, "}")
 }
+
+func DoPerft(depth int) uint64 {
+	board, _ := Parse(START)
+	return Perft(depth, board)
+}
+
+func Perft(depth int, board *Board) uint64 {
+	if depth == 0 {
+		return 1
+	}
+	var nodes uint64 = 0
+	moves := MoveGen(board)
+	for _, move := range moves {
+		boardc := *board
+		MakeMove(&boardc, &move)
+		nodes += Perft(depth-1, &boardc)
+	}
+	return nodes
+}

@@ -203,3 +203,17 @@ func TestMoveGenNonSliderCap(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestPerft(t *testing.T) {
+	tperft(t, 1, 20)
+	tperft(t, 2, 400)
+	tperft(t, 3, 8902)
+}
+
+func tperft(t *testing.T, depth int, expected uint64) {
+	result := DoPerft(depth)
+	t.Log("Result of perft(", depth, "): ", result)
+	if result != expected {
+		t.FailNow()
+	}
+}
