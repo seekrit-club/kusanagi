@@ -66,7 +66,7 @@ func pawncap(b *Board, i int, retval []Move, place int) []Move {
 
 func squareattacked(b *Board, i int) bool {
 	var PawnPush int
-	if b.ToMove == BLACK {
+	if b.ToMove == WHITE {
 		PawnPush = i + 10
 	} else {
 		PawnPush = i - 10
@@ -86,9 +86,9 @@ func squareattacked(b *Board, i int) bool {
 				break
 			} else if piece == QUEEN && GetSide(b.Data[to]) != b.ToMove {
 				return true
-			} else if piece == ROOK && GetSide(b.Data[to]) != b.ToMove && Vector[QUEEN][dir] == 10 || Vector[QUEEN][dir] == -10 || Vector[QUEEN][dir] == 1 || Vector[QUEEN][dir] == -1 {
+			} else if piece == ROOK && GetSide(b.Data[to]) != b.ToMove && (Vector[QUEEN][dir] == 10 || Vector[QUEEN][dir] == -10 || Vector[QUEEN][dir] == 1 || Vector[QUEEN][dir] == -1) {
 				return true
-			} else if piece == BISHOP && GetSide(b.Data[to]) != b.ToMove && Vector[QUEEN][dir] == 1 || Vector[QUEEN][dir] == -1 || Vector[QUEEN][dir] == 9 || Vector[QUEEN][dir] == -9 {
+			} else if piece == BISHOP && GetSide(b.Data[to]) != b.ToMove && (Vector[QUEEN][dir] == 1 || Vector[QUEEN][dir] == -1 || Vector[QUEEN][dir] == 9 || Vector[QUEEN][dir] == -9) {
 				return true
 			}
 			from = to

@@ -218,6 +218,16 @@ func tperft(t *testing.T, depth int, expected uint64) {
 	}
 }
 
+func TestSquareNotAttacked(t *testing.T) {
+	board, err := Parse("4k3/8/8/8/8/8/3p4/4K3 w - - 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	if squareattacked(board, CartesianToIndex(4, 4)) {
+		t.FailNow()
+	}
+}
+
 func TestSquareAttackedByPawn(t *testing.T) {
 	board, err := Parse("4k3/8/8/8/8/8/3p4/4K3 w - - 0 1")
 	if err != nil {
