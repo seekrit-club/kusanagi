@@ -75,9 +75,6 @@ func squareattacked(b *Board, i int) bool {
 		return true
 	}
 	for dir := 0; dir < 8; dir++ {
-		if Vector[QUEEN][dir] == 0 {
-			break
-		}
 		from := i
 		for {
 			to := from + Vector[QUEEN][dir]
