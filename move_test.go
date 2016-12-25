@@ -211,7 +211,7 @@ func TestPerft(t *testing.T) {
 }
 
 func tperft(t *testing.T, depth int, expected uint64) {
-	result := DoPerft(depth)
+	result := DoDividePerft(depth)
 	t.Log("Result of perft(", depth, "): ", result)
 	if result != expected {
 		t.FailNow()

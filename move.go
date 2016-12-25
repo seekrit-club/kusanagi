@@ -169,6 +169,11 @@ func DoPerft(depth int) uint64 {
 	return Perft(depth, board, false)
 }
 
+func DoDividePerft(depth int) uint64 {
+	board, _ := Parse(START)
+	return Perft(depth, board, true)
+}
+
 func Perft(depth int, board *Board, divide bool) uint64 {
 	if depth == 0 {
 		return 1
