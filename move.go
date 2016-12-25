@@ -164,11 +164,6 @@ func (m Move) String() string {
 		IndexToAlgebraic(int(m.To)), " type: ", m.Kind, "}")
 }
 
-func DoPerft(depth int) uint64 {
-	board, _ := Parse(START)
-	return Perft(depth, board, false)
-}
-
 func DoDividePerft(depth int) uint64 {
 	board, _ := Parse(START)
 	return Perft(depth, board, true)
