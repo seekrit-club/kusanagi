@@ -166,10 +166,10 @@ func (m Move) String() string {
 
 func DoPerft(depth int) uint64 {
 	board, _ := Parse(START)
-	return Perft(depth, board)
+	return Perft(depth, board, false)
 }
 
-func Perft(depth int, board *Board) uint64 {
+func Perft(depth int, board *Board, divide bool) uint64 {
 	if depth == 0 {
 		return 1
 	}
@@ -178,7 +178,15 @@ func Perft(depth int, board *Board) uint64 {
 	for _, move := range moves {
 		boardc := *board
 		MakeMove(&boardc, &move)
-		nodes += Perft(depth-1, &boardc)
+		if divide {
+			fmt.Printf("%s%s ", IndexToAlgebraic(int(move.From)), IndexToAlgebraic(int(move.To)))
+		}
+		tmp := Perft(depth-1, &boardc, false)
+		nodes += tmp
+		if divide {
+			fmt.Printf("%d\n", tmp)
+		}
+
 	}
 	return nodes
 }
