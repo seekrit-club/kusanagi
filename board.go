@@ -261,3 +261,11 @@ func FindKing(b *Board, colour byte) (byte, error) {
 	}
 	return INVALID, errors.New("Couldn't find the king")
 }
+
+func Illegal(b *Board) bool {
+	king, err := FindKing(b, b.ToMove ^ BLACK)
+	if err != nil {
+		return true
+	}
+	return squareattacked(b, king, b.ToMove)
+}

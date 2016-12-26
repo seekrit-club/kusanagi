@@ -85,7 +85,7 @@ func squareattacked(b *Board, i byte, attacking byte) bool {
 				return true
 			} else if piece == ROOK && GetSide(b.Data[to]) == attacking && (Vector[QUEEN][dir] == 10 || Vector[QUEEN][dir] == -10 || Vector[QUEEN][dir] == 1 || Vector[QUEEN][dir] == -1) {
 				return true
-			} else if piece == BISHOP && GetSide(b.Data[to]) == attacking && (Vector[QUEEN][dir] == 1 || Vector[QUEEN][dir] == -1 || Vector[QUEEN][dir] == 9 || Vector[QUEEN][dir] == -9) {
+			} else if piece == BISHOP && GetSide(b.Data[to]) == attacking && (Vector[QUEEN][dir] == 11 || Vector[QUEEN][dir] == -11 || Vector[QUEEN][dir] == 9 || Vector[QUEEN][dir] == -9) {
 				return true
 			}
 			from = to
@@ -182,6 +182,9 @@ func Perft(depth int, board *Board, divide bool) uint64 {
 	for _, move := range moves {
 		boardc := *board
 		MakeMove(&boardc, &move)
+		if Illegal(&boardc) {
+			continue
+		}
 		if divide {
 			fmt.Printf("%s%s ", IndexToAlgebraic(move.From), IndexToAlgebraic(move.To))
 		}
