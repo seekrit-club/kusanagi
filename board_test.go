@@ -174,3 +174,25 @@ func TestFindKingInvalid(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestIllegalOnLegalPosition(t *testing.T) {
+	board, err := Parse("rnbqkbnr/ppp1pppp/8/1B1p4/4P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2")
+	if err != nil {
+		t.FailNow()
+	}
+	if Illegal(board) {
+		t.Fail()
+	}
+}
+
+func TestIllegalOnIllegalPosition(t *testing.T) {
+	board, err := Parse("rnbqkbnr/ppp1pppp/8/1B1p4/4P3/8/PPPP1PPP/RNBQK1NR w KQkq - 1 2")
+	if err != nil {
+		t.FailNow()
+	}
+	if !Illegal(board) {
+		t.Fail()
+	}
+}
+
+
