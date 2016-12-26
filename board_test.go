@@ -152,3 +152,25 @@ func TestIndexToAlgebraic(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestFindKingValid(t *testing.T) {
+	board, err := Parse(START)
+	if err != nil {
+		t.FailNow()
+	}
+	sq, err := FindKing(board, WHITE)
+	if err != nil || sq != CartesianToIndex(4, 0) {
+		t.Fail()
+	}
+}
+
+func TestFindKingInvalid(t *testing.T) {
+	board, err := Parse("8/8/8/8/8/8/8/8 w - - 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	sq, err := FindKing(board, WHITE)
+	if err == nil || sq != INVALID {
+		t.Fail()
+	}
+}

@@ -245,12 +245,12 @@ func IndexToAlgebraic(i int) string {
 	return CartesianToAlgebraic(IndexToCartesian(i))
 }
 
-func FindKing(b *Board, colour byte) (byte, error) {
+func FindKing(b *Board, colour byte) (int, error) {
 	for king := A1; king <= H8; king++ {
 		if b.Data[king] != OFFBOARD && GetPiece(b.Data[king]) == KING &&
 			GetSide(b.Data[king]) == colour {
 			return king, nil
 		}
 	}
-	return nil, errors.New("Couldn't find the king")
+	return INVALID, errors.New("Couldn't find the king")
 }
