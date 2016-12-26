@@ -51,20 +51,22 @@ type Board struct {
 	Data      [120]byte
 	ToMove    byte
 	Castle    byte
-	EnPassant int
+	EnPassant byte
 }
 
 const (
-	A1 int = 21
-	H8 int = 98
+	A1 byte = 21
+	H8 byte = 98
 )
 
 const START string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
-const INVALID int = 0
+const INVALID byte = 0
 
 func ClearBoard(b *Board) {
-	for i := 0; i < 120; i++ {
+	b.EnPassant = 1
+	var i byte
+	for i = 0; i < 120; i++ {
 		if OnBoard(i) {
 			b.Data[i] = ONBOARD
 		} else {
@@ -76,10 +78,10 @@ func ClearBoard(b *Board) {
 func Parse(fen string) (*Board, error) {
 	b := new(Board)
 	ClearBoard(b)
-	rank := 7
-	file := 0
-	eprank := -1
-	epfile := -1
+	var rank byte = 7
+	var file byte = 0
+	var eprank int = 0 /* Deliberate; this stores Atoi's result later on. */
+	var epfile byte = 0
 	stage := 0
 	for _, runeValue := range fen {
 		switch stage {
@@ -87,7 +89,7 @@ func Parse(fen string) (*Board, error) {
 			/* Fill the data */
 			if runeValue >= '1' && runeValue <= '8' {
 				inc, _ := strconv.Atoi(string(runeValue))
-				file += inc
+				file += byte(inc)
 			} else if runeValue == '/' {
 				rank -= 1
 				file = 0
@@ -151,11 +153,15 @@ func Parse(fen string) (*Board, error) {
 				eprank, _ = strconv.Atoi(string(runeValue))
 				eprank--
 			} else if runeValue >= 'a' && runeValue <= 'h' {
-				epfile = int(runeValue - 'a')
+				epfile = byte(runeValue - 'a')
 			} else if runeValue == ' ' {
-				b.EnPassant = CartesianToIndex(epfile, eprank)
+				if b.EnPassant != INVALID {
+					b.EnPassant = CartesianToIndex(epfile, byte(eprank))
+				}
 				stage++
-			} else if runeValue != '-' {
+			} else if runeValue == '-' {
+				b.EnPassant = INVALID
+			} else {
 				return nil, errors.New("Unexpected character for en passant")
 			}
 		}
@@ -165,8 +171,9 @@ func Parse(fen string) (*Board, error) {
 
 func PrintBoard(b *Board) string {
 	retval := ""
-	for rank := 7; rank >= 0; rank-- {
-		for file := 0; file < 8; file++ {
+	var rank, file byte
+	for rank = 7; rank != 255; rank-- {
+		for file = 0; file < 8; file++ {
 			retval +=
 				ByteToString(b.Data[CartesianToIndex(file, rank)])
 		}
@@ -175,7 +182,7 @@ func PrintBoard(b *Board) string {
 	return retval
 }
 
-func CartesianToIndex(file, rank int) int {
+func CartesianToIndex(file, rank byte) byte {
 	return 21 + (10 * rank) + file
 }
 
@@ -224,28 +231,28 @@ func IsBlack(b byte) bool {
 	return GetSide(b) == BLACK
 }
 
-func OnBoard(i int) bool {
+func OnBoard(i byte) bool {
 	return i >= A1 && i <= H8 && !(i%10 == 0 || i%10 == 9)
 }
 
-func IndexToCartesian(index int) (int, int) {
-	var file, rank int
+func IndexToCartesian(index byte) (byte, byte) {
+	var file, rank byte
 	file = (index % 10) - 1
 	rank = (index / 10) - 2
 	return file, rank
 }
 
-func CartesianToAlgebraic(file, rank int) string {
-	afile := rune(int('a') + file)
+func CartesianToAlgebraic(file, rank byte) string {
+	afile := rune(byte('a') + file)
 	arank := rank + 1
 	return fmt.Sprintf("%c%d", afile, arank)
 }
 
-func IndexToAlgebraic(i int) string {
+func IndexToAlgebraic(i byte) string {
 	return CartesianToAlgebraic(IndexToCartesian(i))
 }
 
-func FindKing(b *Board, colour byte) (int, error) {
+func FindKing(b *Board, colour byte) (byte, error) {
 	for king := A1; king <= H8; king++ {
 		if b.Data[king] != OFFBOARD && GetPiece(b.Data[king]) == KING &&
 			GetSide(b.Data[king]) == colour {

@@ -29,8 +29,8 @@ type Move struct {
 	Score   int16
 }
 
-func pawnmove(b *Board, i int, retval []Move) []Move {
-	var PawnPush, DoublePush int
+func pawnmove(b *Board, i byte, retval []Move) []Move {
+	var PawnPush, DoublePush byte
 	CanDouble := false
 	if b.ToMove == BLACK {
 		PawnPush = i - 10
@@ -42,12 +42,12 @@ func pawnmove(b *Board, i int, retval []Move) []Move {
 		CanDouble = i/10 == 3
 	}
 	if GetPiece(b.Data[PawnPush]) == EMPTY {
-		retval = append(retval, Move{byte(i),
-			byte(PawnPush), MoveQuiet, EMPTY, 0})
+		retval = append(retval, Move{i,
+			PawnPush, MoveQuiet, EMPTY, 0})
 		if CanDouble && GetPiece(b.Data[DoublePush]) ==
 			EMPTY {
-			retval = append(retval, Move{byte(i),
-				byte(DoublePush), MoveDoublePush, EMPTY, 0})
+			retval = append(retval, Move{i,
+				DoublePush, MoveDoublePush, EMPTY, 0})
 		}
 	}
 	retval = pawncap(b, i, retval, PawnPush-1)
@@ -55,17 +55,17 @@ func pawnmove(b *Board, i int, retval []Move) []Move {
 	return retval
 }
 
-func pawncap(b *Board, i int, retval []Move, place int) []Move {
+func pawncap(b *Board, i byte, retval []Move, place byte) []Move {
 	if OnBoard(place) && GetPiece(b.Data[place]) != EMPTY &&
 		GetSide(b.Data[place]) != b.ToMove {
-		retval = append(retval, Move{byte(i),
-			byte(place), MoveCapture, EMPTY, 0})
+		retval = append(retval, Move{i,
+			place, MoveCapture, EMPTY, 0})
 	}
 	return retval
 }
 
-func squareattacked(b *Board, i int, attacking byte) bool {
-	var PawnPush int
+func squareattacked(b *Board, i byte, attacking byte) bool {
+	var PawnPush byte
 	if attacking == BLACK {
 		PawnPush = i + 10
 	} else {
@@ -77,7 +77,7 @@ func squareattacked(b *Board, i int, attacking byte) bool {
 	for dir := 0; dir < 8; dir++ {
 		from := i
 		for {
-			to := from + Vector[QUEEN][dir]
+			to := byte(int(from) + Vector[QUEEN][dir])
 			piece := GetPiece(b.Data[to])
 			if b.Data[to] == OFFBOARD || (piece != EMPTY && GetSide(b.Data[to]) != attacking) {
 				break
@@ -90,7 +90,7 @@ func squareattacked(b *Board, i int, attacking byte) bool {
 			}
 			from = to
 		}
-		to := i + Vector[KNIGHT][dir]
+		to := byte(int(i) + Vector[KNIGHT][dir])
 		if b.Data[to] != OFFBOARD && GetPiece(b.Data[to]) == KNIGHT && GetSide(b.Data[to]) == attacking {
 			return true
 		}
@@ -98,7 +98,7 @@ func squareattacked(b *Board, i int, attacking byte) bool {
 	return false
 }
 
-func quietmove(b *Board, i int, retval []Move) []Move {
+func quietmove(b *Board, i byte, retval []Move) []Move {
 	piece := GetPiece(b.Data[i])
 	for dir := 0; dir < 8; dir++ {
 		if Vector[piece][dir] == 0 {
@@ -106,19 +106,19 @@ func quietmove(b *Board, i int, retval []Move) []Move {
 		}
 		from := i
 		for {
-			to := from + Vector[piece][dir]
+			to := byte(int(from) + Vector[piece][dir])
 			if b.Data[to] != OFFBOARD {
 				if GetPiece(b.Data[to]) == EMPTY {
-					retval = append(retval, Move{byte(i),
-						byte(to), MoveQuiet, EMPTY, 0})
+					retval = append(retval, Move{i,
+						to, MoveQuiet, EMPTY, 0})
 					if Slide[piece] {
 						from = to
 					} else {
 						break
 					}
 				} else if GetSide(b.Data[to]) != b.ToMove {
-					retval = append(retval, Move{byte(i),
-						byte(to), MoveCapture, EMPTY, 0})
+					retval = append(retval, Move{i,
+						to, MoveCapture, EMPTY, 0})
 					break
 				} else {
 					break
@@ -155,17 +155,17 @@ func MakeMove(b *Board, m *Move) {
 		/* Do nothing */
 	case MoveDoublePush:
 		if b.ToMove == BLACK {
-			b.EnPassant = int(m.From - 10)
+			b.EnPassant = m.From - 10
 		} else {
-			b.EnPassant = int(m.From + 10)
+			b.EnPassant = m.From + 10
 		}
 	}
 	b.ToMove ^= BLACK
 }
 
 func (m Move) String() string {
-	return fmt.Sprint("{From: ", IndexToAlgebraic(int(m.From)), " to: ",
-		IndexToAlgebraic(int(m.To)), " type: ", m.Kind, "}")
+	return fmt.Sprint("{From: ", IndexToAlgebraic(m.From), " to: ",
+		IndexToAlgebraic(m.To), " type: ", m.Kind, "}")
 }
 
 func DoDividePerft(depth int) uint64 {
@@ -183,7 +183,7 @@ func Perft(depth int, board *Board, divide bool) uint64 {
 		boardc := *board
 		MakeMove(&boardc, &move)
 		if divide {
-			fmt.Printf("%s%s ", IndexToAlgebraic(int(move.From)), IndexToAlgebraic(int(move.To)))
+			fmt.Printf("%s%s ", IndexToAlgebraic(move.From), IndexToAlgebraic(move.To))
 		}
 		tmp := Perft(depth-1, &boardc, false)
 		nodes += tmp
