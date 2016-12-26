@@ -267,6 +267,5 @@ func Illegal(b *Board) bool {
 	if err != nil {
 		return true
 	}
-
 	return squareattacked(b, king, b.ToMove)
 }
