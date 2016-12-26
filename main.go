@@ -1,23 +1,21 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
 )
 
 func main() {
-	board, err := Parse(START)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
+	InitState()
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		input, _ := reader.ReadString('\n')
+		if input == "exit\n" {
+			return
+		} else {
+			fmt.Print(XboardParse(strings.TrimSpace(input)))
+		}
 	}
-	board.Data[41] = QUEEN
-	fmt.Print(PrintBoard(board))
-	moves := MoveGen(board)
-	fmt.Println(moves)
-	MakeMove(board, &moves[0])
-	fmt.Print(PrintBoard(board))
-	moves = MoveGen(board)
-	fmt.Println(moves)
-	MakeMove(board, &moves[0])
-	fmt.Print(PrintBoard(board))
 }
