@@ -183,7 +183,6 @@ func Perft(depth int, board *Board, divide bool) uint64 {
 		boardc := *board
 		MakeMove(&boardc, &move)
 		if Illegal(&boardc) {
-			fmt.Printf(".\n")
 			continue
 		}
 		if divide {
