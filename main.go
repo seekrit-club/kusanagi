@@ -12,7 +12,7 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		input, _ := reader.ReadString('\n')
-		if input == "exit\n" {
+		if input == "quit\n" {
 			return
 		} else {
 			fmt.Print(XboardParse(strings.TrimSpace(input)))
