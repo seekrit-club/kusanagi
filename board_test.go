@@ -194,5 +194,3 @@ func TestIllegalOnIllegalPosition(t *testing.T) {
 		t.Fail()
 	}
 }
-
-

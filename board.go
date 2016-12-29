@@ -263,9 +263,41 @@ func FindKing(b *Board, colour byte) (byte, error) {
 }
 
 func Illegal(b *Board) bool {
-	king, err := FindKing(b, b.ToMove ^ BLACK)
+	king, err := FindKing(b, b.ToMove^BLACK)
 	if err != nil {
 		return true
 	}
 	return squareattacked(b, king, b.ToMove)
+}
+
+func AlgebraicToCartesian(a string) (byte, byte, error) {
+	var rank, file byte
+	if len(a) != 2 {
+		return 0, 0, errors.New(fmt.Sprint("algebraic string", a, "was too long!"))
+	}
+	for i, runeValue := range a {
+		if i == 1 {
+			if runeValue >= '1' && runeValue <= '8' {
+				irank, _ := strconv.Atoi(string(runeValue))
+				rank = byte(irank)
+			} else {
+				return 0, 0, errors.New(fmt.Sprint("algebraic string", a, "has invalid rank!"))
+			}
+		} else {
+			if runeValue >= 'a' && runeValue <= 'h' {
+				file = byte(runeValue - 'a')
+			} else {
+				return 0, 0, errors.New(fmt.Sprint("algebraic string", a, "has invalid file!"))
+			}
+		}
+	}
+	return file, rank - 1, nil
+}
+
+func AlgebraicToIndex(a string) (byte, error) {
+	file, rank, err := AlgebraicToCartesian(a)
+	if err != nil {
+		return INVALID, err
+	}
+	return CartesianToIndex(file, rank), nil
 }

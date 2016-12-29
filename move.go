@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 var Vector [8][8]int = [8][8]int{
 	{0, 0, 0, 0, 0, 0, 0, 0},               // empty
@@ -196,4 +199,21 @@ func Perft(depth int, board *Board, divide bool) uint64 {
 
 	}
 	return nodes
+}
+
+func ParseMove(m string) (*Move, error) {
+	if len(m) != 4 {
+		return nil, errors.New("Move is wrong length")
+	}
+	from := m[:2]
+	to := m[2:]
+	fromi, err1 := AlgebraicToIndex(from)
+	if err1 != nil {
+		return nil, err1
+	}
+	toi, err2 := AlgebraicToIndex(to)
+	if err2 != nil {
+		return nil, err2
+	}
+	return &Move{fromi, toi, MoveQuiet, EMPTY, 0}, nil
 }
