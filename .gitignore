@@ -24,3 +24,4 @@ _testmain.go
 *.prof
 
 kusanagi
+bugs_test.go
