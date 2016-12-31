@@ -298,3 +298,31 @@ func TestSquareAttackedByKnight(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestParseMoveParsesValidMove(t *testing.T) {
+	_, err := ParseMove("e2e4")
+	if err != nil {
+		t.Fail()
+	}
+}
+
+func TestParseMoveRejectsTooLongMove(t *testing.T) {
+	_, err := ParseMove("e2e4e7e8f6")
+	if err == nil {
+		t.Fail()
+	}
+}
+
+func TestParseMoveRejectsInvalidFrom(t *testing.T) {
+	_, err := ParseMove("l9e4")
+	if err == nil {
+		t.Fail()
+	}
+}
+
+func TestParseMoveRejectsInvalidTo(t *testing.T) {
+	_, err := ParseMove("e2l9")
+	if err == nil {
+		t.Fail()
+	}
+}

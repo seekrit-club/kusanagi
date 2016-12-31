@@ -195,9 +195,61 @@ func TestIllegalOnIllegalPosition(t *testing.T) {
 	}
 }
 
+func TestIllegalOnEmptyPosition(t *testing.T) {
+	board, err := Parse("8/8/8/8/8/8/8/8 w KQkq - 1 2")
+	if err != nil {
+		t.FailNow()
+	}
+	if !Illegal(board) {
+		t.Fail()
+	}
+}
+
 func TestNotIllegalWhenSliderBlocked(t *testing.T) {
 	board, _ := Parse("rnbq1bnr/pppkpppp/8/3N4/8/8/PPPPPPPP/R1BQKBNR w KQkq - 0 1")
 	if Illegal(board) {
+		t.Fail()
+	}
+}
+
+func TestAlgebraicToCartesianLegal(t *testing.T) {
+	x, y, err := AlgebraicToCartesian("a1")
+	if x != 0 || y != 0 || err != nil {
+		t.Fail()
+	}
+}
+
+func TestAlgebraicToCartesianBadFile(t *testing.T) {
+	_, _, err := AlgebraicToCartesian("i1")
+	if err == nil {
+		t.Fail()
+	}
+}
+
+func TestAlgebraicToCartesianBadRank(t *testing.T) {
+	_, _, err := AlgebraicToCartesian("a9")
+	if err == nil {
+		t.Fail()
+	}
+}
+
+func TestAlgebraicToCartesianTooLong(t *testing.T) {
+	_, _, err := AlgebraicToCartesian("a1u")
+	if err == nil {
+		t.Fail()
+	}
+}
+
+func TestAlgebraicToIndex(t *testing.T) {
+	x, err := AlgebraicToIndex("a1")
+	if x != A1 || err != nil {
+		t.Fail()
+	}
+}
+
+func TestAlgebraicToIndexInvalid(t *testing.T) {
+	_, err := AlgebraicToIndex("z1")
+	if err == nil {
 		t.Fail()
 	}
 }
