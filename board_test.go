@@ -194,3 +194,10 @@ func TestIllegalOnIllegalPosition(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestNotIllegalWhenSliderBlocked(t *testing.T) {
+	board, _ := Parse("rnbq1bnr/pppkpppp/8/3N4/8/8/PPPPPPPP/R1BQKBNR w KQkq - 0 1")
+	if Illegal(board) {
+		t.Fail()
+	}
+}

@@ -90,8 +90,11 @@ func squareattacked(b *Board, i byte, attacking byte) bool {
 				return true
 			} else if piece == BISHOP && GetSide(b.Data[to]) == attacking && (Vector[QUEEN][dir] == 11 || Vector[QUEEN][dir] == -11 || Vector[QUEEN][dir] == 9 || Vector[QUEEN][dir] == -9) {
 				return true
+			} else if piece == EMPTY {
+				from = to
+			} else {
+				break
 			}
-			from = to
 		}
 		to := byte(int(i) + Vector[KNIGHT][dir])
 		if b.Data[to] != OFFBOARD && GetPiece(b.Data[to]) == KNIGHT && GetSide(b.Data[to]) == attacking {
