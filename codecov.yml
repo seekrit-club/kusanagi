@@ -26,3 +26,4 @@ parsers:
     enable_partials: false
 ignore:
   - main.go
+  - xboard.go
