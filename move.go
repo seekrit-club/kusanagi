@@ -33,6 +33,11 @@ type Move struct {
 	Score   int16
 }
 
+type Undo struct {
+	ToData    byte
+	EnPassant byte
+}
+
 func pawnmove(b *Board, i byte, retval []Move) []Move {
 	var PawnPush, DoublePush byte
 	CanDouble := false
@@ -155,7 +160,8 @@ func MoveGen(b *Board) []Move {
 	return retval
 }
 
-func MakeMove(b *Board, m *Move) {
+func MakeMove(b *Board, m *Move) *Undo {
+	retval := &Undo{b.Data[m.To], b.EnPassant}
 	b.EnPassant = INVALID
 	b.Data[m.To] = b.Data[m.From]
 	b.Data[m.From] = EMPTY
@@ -176,6 +182,22 @@ func MakeMove(b *Board, m *Move) {
 		}
 	}
 	b.ToMove ^= BLACK
+	return retval
+}
+
+func UnmakeMove(b *Board, m *Move, u *Undo) {
+	b.Data[m.From] = b.Data[m.To]
+	b.Data[m.To] = u.ToData
+	b.EnPassant = u.EnPassant
+	b.ToMove ^= BLACK
+	switch m.Kind {
+	case MoveEnPassant:
+		if b.ToMove == BLACK {
+			b.Data[m.To+10] = (b.ToMove ^ BLACK) | PAWN
+		} else {
+			b.Data[m.To-10] = (b.ToMove ^ BLACK) | PAWN
+		}
+	}
 }
 
 func (m Move) String() string {
@@ -195,19 +217,20 @@ func Perft(depth int, board *Board, divide bool) uint64 {
 	var nodes uint64 = 0
 	moves := MoveGen(board)
 	for _, move := range moves {
-		boardc := *board
-		MakeMove(&boardc, &move)
-		if Illegal(&boardc) {
+		undo := MakeMove(board, &move)
+		if Illegal(board) {
+			UnmakeMove(board, &move, undo)
 			continue
 		}
 		if divide {
 			fmt.Printf("%s%s ", IndexToAlgebraic(move.From), IndexToAlgebraic(move.To))
 		}
-		tmp := Perft(depth-1, &boardc, false)
+		tmp := Perft(depth-1, board, false)
 		nodes += tmp
 		if divide {
 			fmt.Printf("%d\n", tmp)
 		}
+		UnmakeMove(board, &move, undo)
 
 	}
 	return nodes
