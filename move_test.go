@@ -368,3 +368,19 @@ func TestMoveGenEnPassant(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestUnmakeMoveBlackEnPassant(t *testing.T) {
+	board, err := Parse("rnbqkbnr/ppp1pppp/8/8/3pP3/PP6/2PP1PPP/RNBQKBNR b KQkq e3 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	from, _ := AlgebraicToIndex("d4")
+	to, _ := AlgebraicToIndex("e3")
+	taken, _ := AlgebraicToIndex("e4")
+	move := &Move{from, to, MoveEnPassant, EMPTY, 0}
+	undo := MakeMove(board, move)
+	UnmakeMove(board, move, undo)
+	if GetPiece(board.Data[taken]) != PAWN || GetPiece(board.Data[to]) != EMPTY || GetPiece(board.Data[from]) != PAWN {
+		t.Fail()
+	}
+}
