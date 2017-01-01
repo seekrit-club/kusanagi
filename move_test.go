@@ -326,3 +326,44 @@ func TestParseMoveRejectsInvalidTo(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestMakeMoveEnPassantWhite(t *testing.T) {
+	board, err := Parse("rnbqkbnr/1pp1pppp/p7/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	from, _ := AlgebraicToIndex("e5")
+	to, _ := AlgebraicToIndex("d6")
+	taken, _ := AlgebraicToIndex("d5")
+	MakeMove(board, &Move{from, to, MoveEnPassant, EMPTY, 0})
+	if GetPiece(board.Data[taken]) != EMPTY || GetPiece(board.Data[to]) != PAWN {
+		t.Fail()
+	}
+}
+
+func TestMakeMoveEnPassantBlack(t *testing.T) {
+	board, err := Parse("rnbqkbnr/ppp1pppp/8/8/3pP3/PP6/2PP1PPP/RNBQKBNR b KQkq e3 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	from, _ := AlgebraicToIndex("d4")
+	to, _ := AlgebraicToIndex("e3")
+	taken, _ := AlgebraicToIndex("e4")
+	MakeMove(board, &Move{from, to, MoveEnPassant, EMPTY, 0})
+	if GetPiece(board.Data[taken]) != EMPTY || GetPiece(board.Data[to]) != PAWN {
+		t.Fail()
+	}
+}
+
+func TestMoveGenEnPassant(t *testing.T) {
+	board, err := Parse("rnbqkbnr/1pp1pppp/p7/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 1")
+	if err != nil {
+		t.FailNow()
+	}
+	moves := MoveGen(board)
+	from, _ := AlgebraicToIndex("e5")
+	to, _ := AlgebraicToIndex("d6")
+	if !IsMoveInMoveList(t, moves, from, to, MoveEnPassant) {
+		t.Fail()
+	}
+}

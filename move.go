@@ -22,6 +22,7 @@ const (
 	MoveQuiet byte = iota
 	MoveDoublePush
 	MoveCapture
+	MoveEnPassant
 )
 
 type Move struct {
@@ -63,6 +64,8 @@ func pawncap(b *Board, i byte, retval []Move, place byte) []Move {
 		GetSide(b.Data[place]) != b.ToMove {
 		retval = append(retval, Move{i,
 			place, MoveCapture, EMPTY, 0})
+	} else if OnBoard(place) && GetPiece(b.Data[place]) == EMPTY && b.EnPassant == place {
+		retval = append(retval, Move{i, place, MoveEnPassant, EMPTY, 0})
 	}
 	return retval
 }
@@ -164,6 +167,12 @@ func MakeMove(b *Board, m *Move) {
 			b.EnPassant = m.From - 10
 		} else {
 			b.EnPassant = m.From + 10
+		}
+	case MoveEnPassant:
+		if b.ToMove == BLACK {
+			b.Data[m.To + 10] = EMPTY
+		} else {
+			b.Data[m.To - 10] = EMPTY
 		}
 	}
 	b.ToMove ^= BLACK
