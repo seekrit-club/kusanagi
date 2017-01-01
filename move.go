@@ -162,6 +162,13 @@ func MoveGen(b *Board) []Move {
 
 func MakeMove(b *Board, m *Move) *Undo {
 	retval := &Undo{b.Data[m.To], b.EnPassant}
+	if GetPiece(b.Data[m.From]) == KING {
+		if b.ToMove == BLACK {
+			b.BlackKing = m.To
+		} else {
+			b.WhiteKing = m.To
+		}
+	}
 	b.EnPassant = INVALID
 	b.Data[m.To] = b.Data[m.From]
 	b.Data[m.From] = EMPTY
@@ -196,6 +203,13 @@ func UnmakeMove(b *Board, m *Move, u *Undo) {
 			b.Data[m.To+10] = (b.ToMove ^ BLACK) | PAWN
 		} else {
 			b.Data[m.To-10] = (b.ToMove ^ BLACK) | PAWN
+		}
+	}
+	if GetPiece(b.Data[m.From]) == KING {
+		if b.ToMove == BLACK {
+			b.BlackKing = m.From
+		} else {
+			b.WhiteKing = m.From
 		}
 	}
 }

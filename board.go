@@ -52,6 +52,8 @@ type Board struct {
 	ToMove    byte
 	Castle    byte
 	EnPassant byte
+	WhiteKing byte
+	BlackKing byte
 }
 
 const (
@@ -166,6 +168,8 @@ func Parse(fen string) (*Board, error) {
 			}
 		}
 	}
+	b.WhiteKing, _ = FindKing(b, WHITE)
+	b.BlackKing, _ = FindKing(b, BLACK)
 	return b, nil
 }
 
@@ -263,7 +267,7 @@ func FindKing(b *Board, colour byte) (byte, error) {
 }
 
 func Illegal(b *Board) bool {
-	king, err := FindKing(b, b.ToMove^BLACK)
+	king, err := GetKing(b, b.ToMove^BLACK)
 	if err != nil {
 		return true
 	}
@@ -300,4 +304,18 @@ func AlgebraicToIndex(a string) (byte, error) {
 		return INVALID, err
 	}
 	return CartesianToIndex(file, rank), nil
+}
+
+func GetKing(b *Board, side byte) (byte, error) {
+	var retval byte
+	if side == BLACK {
+		retval = b.BlackKing
+	} else {
+		retval = b.WhiteKing
+	}
+	if retval == INVALID {
+		return INVALID, errors.New("No king on the board")
+	} else {
+		return retval, nil
+	}
 }
