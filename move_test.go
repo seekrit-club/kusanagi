@@ -209,6 +209,7 @@ func TestPerft(t *testing.T) {
 	tperft(t, 2, 400)
 	tperft(t, 3, 8902)
 	tperft(t, 4, 197281)
+	tperft(t, 5, 4865609)
 }
 
 func tperft(t *testing.T, depth int, expected uint64) {
