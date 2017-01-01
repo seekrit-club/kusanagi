@@ -170,9 +170,9 @@ func MakeMove(b *Board, m *Move) {
 		}
 	case MoveEnPassant:
 		if b.ToMove == BLACK {
-			b.Data[m.To + 10] = EMPTY
+			b.Data[m.To+10] = EMPTY
 		} else {
-			b.Data[m.To - 10] = EMPTY
+			b.Data[m.To-10] = EMPTY
 		}
 	}
 	b.ToMove ^= BLACK
