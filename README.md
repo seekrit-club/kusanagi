@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/japanoise/kusanagi.svg?branch=master)](https://travis-ci.org/japanoise/kusanagi)
 [![codecov](https://codecov.io/gh/japanoise/kusanagi/branch/master/graph/badge.svg)](https://codecov.io/gh/japanoise/kusanagi)
-[![Report card](https://codecov.io/gh/japanoise/kusanagi/branch/master/graph/badge.svg)](https://codecov.io/gh/japanoise/kusanagi)
+[![Report card](https://goreportcard.com/badge/github.com/japanoise/kusanagi)](https://goreportcard.com/report/github.com/japanoise/kusanagi)
 
 # kusanagi
 
