@@ -23,6 +23,8 @@ const (
 	MoveDoublePush
 	MoveCapture
 	MoveEnPassant
+	MovePromote
+	MoveCapPromote
 )
 
 type Move struct {
@@ -41,34 +43,59 @@ type Undo struct {
 func pawnmove(b *Board, i byte, retval []Move) []Move {
 	var PawnPush, DoublePush byte
 	CanDouble := false
+	CanPromote := false
 	if b.ToMove == BLACK {
 		PawnPush = i - 10
 		DoublePush = i - 20
 		CanDouble = i/10 == 8
+		CanPromote = i/10 == 3
 	} else {
 		PawnPush = i + 10
 		DoublePush = i + 20
 		CanDouble = i/10 == 3
+		CanPromote = i/10 == 8
 	}
 	if GetPiece(b.Data[PawnPush]) == EMPTY {
-		retval = append(retval, Move{i,
-			PawnPush, MoveQuiet, EMPTY, 0})
+		if CanPromote {
+			retval = append(retval, Move{i,
+				PawnPush, MovePromote, QUEEN, 0})
+			retval = append(retval, Move{i,
+				PawnPush, MovePromote, ROOK, 0})
+			retval = append(retval, Move{i,
+				PawnPush, MovePromote, BISHOP, 0})
+			retval = append(retval, Move{i,
+				PawnPush, MovePromote, KNIGHT, 0})
+		} else {
+			retval = append(retval, Move{i,
+				PawnPush, MoveQuiet, EMPTY, 0})
+		}
 		if CanDouble && GetPiece(b.Data[DoublePush]) ==
 			EMPTY {
 			retval = append(retval, Move{i,
 				DoublePush, MoveDoublePush, EMPTY, 0})
 		}
 	}
-	retval = pawncap(b, i, retval, PawnPush-1)
-	retval = pawncap(b, i, retval, PawnPush+1)
+	retval = pawncap(b, i, retval, PawnPush-1, CanPromote)
+	retval = pawncap(b, i, retval, PawnPush+1, CanPromote)
 	return retval
 }
 
-func pawncap(b *Board, i byte, retval []Move, place byte) []Move {
+func pawncap(b *Board, i byte, retval []Move, place byte, CanPromote bool) []Move {
 	if OnBoard(place) && GetPiece(b.Data[place]) != EMPTY &&
 		GetSide(b.Data[place]) != b.ToMove {
-		retval = append(retval, Move{i,
-			place, MoveCapture, EMPTY, 0})
+		if CanPromote {
+			retval = append(retval, Move{i,
+				place, MoveCapPromote, QUEEN, 0})
+			retval = append(retval, Move{i,
+				place, MoveCapPromote, ROOK, 0})
+			retval = append(retval, Move{i,
+				place, MoveCapPromote, BISHOP, 0})
+			retval = append(retval, Move{i,
+				place, MoveCapPromote, KNIGHT, 0})
+		} else {
+			retval = append(retval, Move{i,
+				place, MoveCapture, EMPTY, 0})
+		}
 	} else if OnBoard(place) && GetPiece(b.Data[place]) == EMPTY && b.EnPassant == place {
 		retval = append(retval, Move{i, place, MoveEnPassant, EMPTY, 0})
 	}
@@ -106,6 +133,10 @@ func squareattacked(b *Board, i byte, attacking byte) bool {
 		}
 		to := byte(int(i) + Vector[KNIGHT][dir])
 		if b.Data[to] != OFFBOARD && GetPiece(b.Data[to]) == KNIGHT && GetSide(b.Data[to]) == attacking {
+			return true
+		}
+		to = byte(int(i) + Vector[KING][dir])
+		if b.Data[to] != OFFBOARD && GetPiece(b.Data[to]) == KING && GetSide(b.Data[to]) == attacking {
 			return true
 		}
 	}
@@ -187,6 +218,10 @@ func MakeMove(b *Board, m *Move) *Undo {
 		} else {
 			b.Data[m.To-10] = EMPTY
 		}
+	case MoveCapPromote:
+		fallthrough
+	case MovePromote:
+		b.Data[m.To] = b.ToMove | m.Promote
 	}
 	b.ToMove ^= BLACK
 	return retval
@@ -204,6 +239,10 @@ func UnmakeMove(b *Board, m *Move, u *Undo) {
 		} else {
 			b.Data[m.To-10] = (b.ToMove ^ BLACK) | PAWN
 		}
+	case MoveCapPromote:
+		fallthrough
+	case MovePromote:
+		b.Data[m.From] = b.ToMove | PAWN
 	}
 	if GetPiece(b.Data[m.From]) == KING {
 		if b.ToMove == BLACK {
@@ -237,7 +276,20 @@ func Perft(depth int, board *Board, divide bool) uint64 {
 			continue
 		}
 		if divide {
-			fmt.Printf("%s%s ", IndexToAlgebraic(move.From), IndexToAlgebraic(move.To))
+			promote := ""
+			if move.Kind == MovePromote || move.Kind == MoveCapPromote {
+				switch move.Promote {
+				case QUEEN:
+					promote = "q"
+				case ROOK:
+					promote = "r"
+				case KNIGHT:
+					promote = "n"
+				case BISHOP:
+					promote = "b"
+				}
+			}
+			fmt.Printf("%s%s%s ", IndexToAlgebraic(move.From), IndexToAlgebraic(move.To), promote)
 		}
 		tmp := Perft(depth-1, board, false)
 		nodes += tmp
