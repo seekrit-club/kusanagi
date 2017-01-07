@@ -5,10 +5,10 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"os"
-	"strings"
 	"log"
+	"os"
 	"runtime/pprof"
+	"strings"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
