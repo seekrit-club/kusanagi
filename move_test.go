@@ -394,3 +394,39 @@ func TestPerftPawnPromotions(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestMoveToLongAlgebraicPromoteQueen(t *testing.T) {
+	from, _ := AlgebraicToIndex("e7")
+	to, _ := AlgebraicToIndex("e8")
+	move := &Move{from, to, MovePromote, QUEEN, 0}
+	if MoveToLongAlgebraic(move) != "e7e8q " {
+		t.FailNow()
+	}
+}
+
+func TestMoveToLongAlgebraicPromoteRook(t *testing.T) {
+	from, _ := AlgebraicToIndex("e7")
+	to, _ := AlgebraicToIndex("e8")
+	move := &Move{from, to, MovePromote, ROOK, 0}
+	if MoveToLongAlgebraic(move) != "e7e8r " {
+		t.FailNow()
+	}
+}
+
+func TestMoveToLongAlgebraicPromoteBishop(t *testing.T) {
+	from, _ := AlgebraicToIndex("e7")
+	to, _ := AlgebraicToIndex("e8")
+	move := &Move{from, to, MovePromote, BISHOP, 0}
+	if MoveToLongAlgebraic(move) != "e7e8b " {
+		t.FailNow()
+	}
+}
+
+func TestMoveToLongAlgebraicPromoteKnight(t *testing.T) {
+	from, _ := AlgebraicToIndex("e7")
+	to, _ := AlgebraicToIndex("e8")
+	move := &Move{from, to, MovePromote, KNIGHT, 0}
+	if MoveToLongAlgebraic(move) != "e7e8n " {
+		t.FailNow()
+	}
+}

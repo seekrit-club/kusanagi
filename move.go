@@ -276,20 +276,7 @@ func Perft(depth int, board *Board, divide bool) uint64 {
 			continue
 		}
 		if divide {
-			promote := ""
-			if move.Kind == MovePromote || move.Kind == MoveCapPromote {
-				switch move.Promote {
-				case QUEEN:
-					promote = "q"
-				case ROOK:
-					promote = "r"
-				case KNIGHT:
-					promote = "n"
-				case BISHOP:
-					promote = "b"
-				}
-			}
-			fmt.Printf("%s%s%s ", IndexToAlgebraic(move.From), IndexToAlgebraic(move.To), promote)
+			fmt.Print(MoveToLongAlgebraic(&move))
 		}
 		tmp := Perft(depth-1, board, false)
 		nodes += tmp
@@ -300,6 +287,23 @@ func Perft(depth int, board *Board, divide bool) uint64 {
 
 	}
 	return nodes
+}
+
+func MoveToLongAlgebraic(move *Move) string {
+	promote := ""
+	if move.Kind == MovePromote || move.Kind == MoveCapPromote {
+		switch move.Promote {
+		case QUEEN:
+			promote = "q"
+		case ROOK:
+			promote = "r"
+		case KNIGHT:
+			promote = "n"
+		case BISHOP:
+			promote = "b"
+		}
+	}
+	return fmt.Sprintf("%s%s%s ", IndexToAlgebraic(move.From), IndexToAlgebraic(move.To), promote)
 }
 
 func ParseMove(m string) (*Move, error) {
