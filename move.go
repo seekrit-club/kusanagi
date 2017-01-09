@@ -25,6 +25,7 @@ const (
 	MoveEnPassant
 	MovePromote
 	MoveCapPromote
+	MoveCastle
 )
 
 type Move struct {
@@ -38,6 +39,7 @@ type Move struct {
 type Undo struct {
 	ToData    byte
 	EnPassant byte
+	Castle byte
 }
 
 func pawnmove(b *Board, i byte, retval []Move) []Move {
@@ -176,8 +178,43 @@ func quietmove(b *Board, i byte, retval []Move) []Move {
 	return retval
 }
 
+func castle(b *Board, retval []Move, file1, file2, file3 byte) []Move {
+	var rank byte
+	if b.ToMove == BLACK {
+		rank = 7
+	} else {
+		rank = 0
+	}
+	sq1 := CartesianToIndex(file1, rank)
+	sq2 := CartesianToIndex(file2, rank)
+	sq3 := CartesianToIndex(file3, rank)
+	if GetPiece(b.Data[sq2]) != EMPTY || GetPiece(b.Data[sq3]) != EMPTY {
+		fmt.Println(sq1, sq2, sq3)
+		return retval
+	}
+	enemy := b.ToMove ^ BLACK
+	if !squareattacked(b, sq1, enemy) && !squareattacked(b, sq2, enemy) && !squareattacked(b, sq3, enemy) {
+		retval = append(retval, Move{sq1, sq3, MoveCastle, EMPTY, 0})
+	}
+	return retval
+}
+
+func qscastle(b *Board, retval []Move) []Move {
+	return castle(b, retval, 4, 3, 2)
+}
+
+func kscastle(b *Board, retval []Move) []Move {
+	return castle(b, retval, 4, 5, 6)
+}
+
 func MoveGen(b *Board) []Move {
 	retval := make([]Move, 0, 32)
+	if CanCastle(b, b.ToMove, QUEEN) {
+		retval = qscastle(b, retval)
+	}
+	if CanCastle(b, b.ToMove, KING) {
+		retval = kscastle(b, retval)
+	}
 	for i := A1; i <= H8; i++ {
 		if !OnBoard(i) || GetPiece(b.Data[i]) == EMPTY || GetSide(b.Data[i]) != b.ToMove {
 			continue
@@ -192,7 +229,7 @@ func MoveGen(b *Board) []Move {
 }
 
 func MakeMove(b *Board, m *Move) *Undo {
-	retval := &Undo{b.Data[m.To], b.EnPassant}
+	retval := &Undo{b.Data[m.To], b.EnPassant, b.Castle}
 	if GetPiece(b.Data[m.From]) == KING {
 		if b.ToMove == BLACK {
 			b.BlackKing = m.To
@@ -222,6 +259,16 @@ func MakeMove(b *Board, m *Move) *Undo {
 		fallthrough
 	case MovePromote:
 		b.Data[m.To] = b.ToMove | m.Promote
+	case MoveCastle:
+		if m.To < m.From {
+			/* Queenside */
+			b.Data[m.To+1] = b.Data[m.To-2]
+			b.Data[m.To-2] = EMPTY
+		} else {
+			/* Kingside */
+			b.Data[m.To-1] = b.Data[m.To+1]
+			b.Data[m.To+1] = EMPTY
+		}
 	}
 	b.ToMove ^= BLACK
 	return retval
@@ -231,6 +278,7 @@ func UnmakeMove(b *Board, m *Move, u *Undo) {
 	b.Data[m.From] = b.Data[m.To]
 	b.Data[m.To] = u.ToData
 	b.EnPassant = u.EnPassant
+	b.Castle = u.Castle
 	b.ToMove ^= BLACK
 	switch m.Kind {
 	case MoveEnPassant:
@@ -243,6 +291,16 @@ func UnmakeMove(b *Board, m *Move, u *Undo) {
 		fallthrough
 	case MovePromote:
 		b.Data[m.From] = b.ToMove | PAWN
+	case MoveCastle:
+		if m.To < m.From {
+			/* Queenside */
+			b.Data[m.To-2] = b.Data[m.To+1]
+			b.Data[m.To+1] = EMPTY
+		} else {
+			/* Kingside */
+			b.Data[m.To+1] = b.Data[m.To-1]
+			b.Data[m.To-1] = EMPTY
+		}
 	}
 	if GetPiece(b.Data[m.From]) == KING {
 		if b.ToMove == BLACK {

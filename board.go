@@ -319,3 +319,21 @@ func GetKing(b *Board, side byte) (byte, error) {
 		return retval, nil
 	}
 }
+
+func CanCastle(b *Board, color, side byte) bool {
+	var flag byte
+	if color == BLACK {
+		if side == QUEEN {
+			flag = CASTLEBQ
+		} else {
+			flag = CASTLEBK
+		}
+	} else {
+		if side == QUEEN {
+			flag = CASTLEWQ
+		} else {
+			flag = CASTLEWK
+		}
+	}
+	return b.Castle | flag != 0
+}
