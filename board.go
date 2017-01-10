@@ -65,8 +65,42 @@ const START string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 const INVALID byte = 0
 
+var CASTLEMASK [120]byte
+
+func InitCastleMask() {
+	for sq := 0; sq < 120; sq++ {
+		CASTLEMASK[sq] = 15 // all castle rights const?
+	}
+
+	sq, _ := AlgebraicToIndex("a1")
+
+	CASTLEMASK[sq] ^= CASTLEWQ
+
+	sq, _ = AlgebraicToIndex("h1")
+
+	CASTLEMASK[sq] ^= CASTLEWK
+
+	sq, _ = AlgebraicToIndex("e1")
+
+	CASTLEMASK[sq] ^= CASTLEWK | CASTLEWQ
+
+	sq, _ = AlgebraicToIndex("a8")
+
+	CASTLEMASK[sq] ^= CASTLEBQ
+
+	sq, _ = AlgebraicToIndex("h8")
+
+	CASTLEMASK[sq] ^= CASTLEBK
+
+	sq, _ = AlgebraicToIndex("e8")
+
+	CASTLEMASK[sq] ^= CASTLEBK | CASTLEBQ
+}
+
 func ClearBoard(b *Board) {
+	InitCastleMask()
 	b.EnPassant = 1
+	b.Castle = 0
 	var i byte
 	for i = 0; i < 120; i++ {
 		if OnBoard(i) {
@@ -135,7 +169,7 @@ func Parse(fen string) (*Board, error) {
 			/* Castling */
 			switch runeValue {
 			case '-':
-				/* Do nothing */
+				b.Castle = 0
 			case 'K':
 				b.Castle |= CASTLEWK
 			case 'Q':
@@ -335,5 +369,5 @@ func CanCastle(b *Board, color, side byte) bool {
 			flag = CASTLEWK
 		}
 	}
-	return b.Castle | flag != 0
+	return b.Castle & flag != 0
 }

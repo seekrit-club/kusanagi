@@ -178,7 +178,7 @@ func quietmove(b *Board, i byte, retval []Move) []Move {
 	return retval
 }
 
-func castle(b *Board, retval []Move, file1, file2, file3 byte) []Move {
+func castle(b *Board, retval []Move, file1, file2, file3, file4 byte) []Move {
 	var rank byte
 	if b.ToMove == BLACK {
 		rank = 7
@@ -188,8 +188,11 @@ func castle(b *Board, retval []Move, file1, file2, file3 byte) []Move {
 	sq1 := CartesianToIndex(file1, rank)
 	sq2 := CartesianToIndex(file2, rank)
 	sq3 := CartesianToIndex(file3, rank)
+	sq4 := CartesianToIndex(file4, rank)
 	if GetPiece(b.Data[sq2]) != EMPTY || GetPiece(b.Data[sq3]) != EMPTY {
-		fmt.Println(sq1, sq2, sq3)
+		return retval
+	}
+	if file4 != 0 && GetPiece(b.Data[sq4]) != EMPTY {
 		return retval
 	}
 	enemy := b.ToMove ^ BLACK
@@ -200,11 +203,11 @@ func castle(b *Board, retval []Move, file1, file2, file3 byte) []Move {
 }
 
 func qscastle(b *Board, retval []Move) []Move {
-	return castle(b, retval, 4, 3, 2)
+	return castle(b, retval, 4, 3, 2, 1)
 }
 
 func kscastle(b *Board, retval []Move) []Move {
-	return castle(b, retval, 4, 5, 6)
+	return castle(b, retval, 4, 5, 6, 0)
 }
 
 func MoveGen(b *Board) []Move {
