@@ -30,7 +30,7 @@ func XboardParse(line string) string {
 		global.board, _ = Parse(strings.TrimPrefix(line, "setboard "))
 	case "usermove":
 		if len(words) > 1 {
-			move, err := ParseMove(words[1])
+			move, err := ParseMove(global.board, words[1])
 			if err == nil {
 				MakeMove(global.board, move)
 			} else {

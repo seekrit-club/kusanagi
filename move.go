@@ -342,7 +342,7 @@ func Perft(depth int, board *Board, divide bool) uint64 {
 		tmp := Perft(depth-1, board, false)
 		nodes += tmp
 		if divide {
-			fmt.Printf("%d\n", tmp)
+			fmt.Printf(" %d\n", tmp)
 		}
 		UnmakeMove(board, &move, undo)
 
@@ -364,22 +364,15 @@ func MoveToLongAlgebraic(move *Move) string {
 			promote = "b"
 		}
 	}
-	return fmt.Sprintf("%s%s%s ", IndexToAlgebraic(move.From), IndexToAlgebraic(move.To), promote)
+	return fmt.Sprintf("%s%s%s", IndexToAlgebraic(move.From), IndexToAlgebraic(move.To), promote)
 }
 
-func ParseMove(m string) (*Move, error) {
-	if len(m) != 4 {
-		return nil, errors.New("Move is wrong length")
+func ParseMove(b *Board, m string) (*Move, error) {
+	moves := MoveGen(b)
+	for _, move := range moves {
+		if MoveToLongAlgebraic(&move) == m {
+			return &move, nil
+		}
 	}
-	from := m[:2]
-	to := m[2:]
-	fromi, err1 := AlgebraicToIndex(from)
-	if err1 != nil {
-		return nil, err1
-	}
-	toi, err2 := AlgebraicToIndex(to)
-	if err2 != nil {
-		return nil, err2
-	}
-	return &Move{fromi, toi, MoveQuiet, EMPTY, 0}, nil
+	return nil, errors.New("Move not legal")
 }

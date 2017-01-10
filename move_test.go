@@ -300,34 +300,6 @@ func TestSquareAttackedByKnight(t *testing.T) {
 	}
 }
 
-func TestParseMoveParsesValidMove(t *testing.T) {
-	_, err := ParseMove("e2e4")
-	if err != nil {
-		t.Fail()
-	}
-}
-
-func TestParseMoveRejectsTooLongMove(t *testing.T) {
-	_, err := ParseMove("e2e4e7e8f6")
-	if err == nil {
-		t.Fail()
-	}
-}
-
-func TestParseMoveRejectsInvalidFrom(t *testing.T) {
-	_, err := ParseMove("l9e4")
-	if err == nil {
-		t.Fail()
-	}
-}
-
-func TestParseMoveRejectsInvalidTo(t *testing.T) {
-	_, err := ParseMove("e2l9")
-	if err == nil {
-		t.Fail()
-	}
-}
-
 func TestMakeMoveEnPassantWhite(t *testing.T) {
 	board, err := Parse("rnbqkbnr/1pp1pppp/p7/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 1")
 	if err != nil {
@@ -399,7 +371,7 @@ func TestMoveToLongAlgebraicPromoteQueen(t *testing.T) {
 	from, _ := AlgebraicToIndex("e7")
 	to, _ := AlgebraicToIndex("e8")
 	move := &Move{from, to, MovePromote, QUEEN, 0}
-	if MoveToLongAlgebraic(move) != "e7e8q " {
+	if MoveToLongAlgebraic(move) != "e7e8q" {
 		t.FailNow()
 	}
 }
@@ -408,7 +380,7 @@ func TestMoveToLongAlgebraicPromoteRook(t *testing.T) {
 	from, _ := AlgebraicToIndex("e7")
 	to, _ := AlgebraicToIndex("e8")
 	move := &Move{from, to, MovePromote, ROOK, 0}
-	if MoveToLongAlgebraic(move) != "e7e8r " {
+	if MoveToLongAlgebraic(move) != "e7e8r" {
 		t.FailNow()
 	}
 }
@@ -417,7 +389,7 @@ func TestMoveToLongAlgebraicPromoteBishop(t *testing.T) {
 	from, _ := AlgebraicToIndex("e7")
 	to, _ := AlgebraicToIndex("e8")
 	move := &Move{from, to, MovePromote, BISHOP, 0}
-	if MoveToLongAlgebraic(move) != "e7e8b " {
+	if MoveToLongAlgebraic(move) != "e7e8b" {
 		t.FailNow()
 	}
 }
@@ -426,7 +398,7 @@ func TestMoveToLongAlgebraicPromoteKnight(t *testing.T) {
 	from, _ := AlgebraicToIndex("e7")
 	to, _ := AlgebraicToIndex("e8")
 	move := &Move{from, to, MovePromote, KNIGHT, 0}
-	if MoveToLongAlgebraic(move) != "e7e8n " {
+	if MoveToLongAlgebraic(move) != "e7e8n" {
 		t.FailNow()
 	}
 }
