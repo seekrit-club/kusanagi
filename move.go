@@ -273,6 +273,7 @@ func MakeMove(b *Board, m *Move) *Undo {
 			b.Data[m.To+1] = EMPTY
 		}
 	}
+	b.Castle &= CASTLEMASK[m.From] & CASTLEMASK[m.To]
 	b.ToMove ^= BLACK
 	return retval
 }
