@@ -12,6 +12,7 @@ import (
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+var verbose = flag.Bool("v", false, "verbose output")
 
 func main() {
 	flag.Parse()
@@ -30,7 +31,7 @@ func main() {
 		if input == "quit\n" || err == io.EOF {
 			return
 		} else {
-			fmt.Print(XboardParse(strings.TrimSpace(input)))
+			fmt.Print(XboardParse(strings.TrimSpace(input), *verbose))
 		}
 	}
 }

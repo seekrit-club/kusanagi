@@ -7,12 +7,32 @@ import (
 	"time"
 )
 
-func XboardParse(line string) string {
+func XboardParse(line string, verbose bool) string {
+	if verbose {
+		log.Println(line)
+	}
 	words := strings.Split(line, " ")
 	if len(words) == 0 {
 		return "\n"
 	}
 	switch words[0] {
+	case "perft":
+		if len(words) > 2 {
+			depth, err := strconv.Atoi(words[1])
+			if err != nil {
+				return err.Error()
+			}
+			var expected uint64
+			expected, err = strconv.ParseUint(words[2],10,64)
+			if err != nil {
+				return err.Error()
+			}
+			if Perft(depth, global.board, false) == expected {
+				return "SUCCESS\n"
+			} else {
+				return "FAILURE\n"
+			}
+		}
 	case "divide":
 		if len(words) > 1 {
 			res, err := strconv.Atoi(words[1])
