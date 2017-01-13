@@ -24,14 +24,23 @@ func main() {
 		pprof.StartCPUProfile(f)
 		defer pprof.StopCPUProfile()
 	}
-	InitState()
+	board := InitState()
 	reader := bufio.NewReader(os.Stdin)
+	var result string
 	for {
 		input, err := reader.ReadString('\n')
 		if input == "quit\n" || err == io.EOF {
 			return
 		} else {
-			fmt.Print(XboardParse(strings.TrimSpace(input), *verbose))
+			board, result = XboardParse(strings.TrimSpace(input),
+				board, *verbose)
+			fmt.Print(result)
 		}
 	}
+}
+
+func InitState() *Board {
+	board := new(Board)
+	ClearBoard(board)
+	return board
 }

@@ -39,7 +39,7 @@ type Move struct {
 type Undo struct {
 	ToData    byte
 	EnPassant byte
-	Castle byte
+	Castle    byte
 }
 
 func pawnmove(b *Board, i byte, retval []Move) []Move {

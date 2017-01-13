@@ -369,5 +369,5 @@ func CanCastle(b *Board, color, side byte) bool {
 			flag = CASTLEWK
 		}
 	}
-	return b.Castle & flag != 0
+	return b.Castle&flag != 0
 }
