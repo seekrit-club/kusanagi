@@ -58,19 +58,21 @@ func MaterialCount(b *Board) int {
 	return retval
 }
 
-func NegaMax(board *Board, depth int) int {
-	best := -INFINITY
+func AlphaBeta(board *Board, depth, alpha, beta int) int {
 	if depth <= 0 {
 		return Evaluate(board)
 	}
 	moves := MoveGen(board)
 	for _, move := range moves {
 		undo := MakeMove(board, &move)
-		val := -NegaMax(board, depth-1)
+		val := -AlphaBeta(board, depth-1, -beta, -alpha)
 		UnmakeMove(board, &move, undo)
-		if val > best {
-			best = val
+		if val >= beta {
+			return beta
+		}
+		if val > alpha {
+			alpha = val
 		}
 	}
-	return best
+	return alpha
 }
