@@ -419,3 +419,19 @@ func TestMoveToLongAlgebraicPromoteKnight(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestParseMoveValid(t *testing.T) {
+	board, _ := Parse(START)
+	_, err := ParseMove(board, "e2e4")
+	if err != nil {
+		t.FailNow()
+	}
+}
+
+func TestParseMoveInvalid(t *testing.T) {
+	board, _ := Parse(START)
+	_, err := ParseMove(board, "e1e2")
+	if err == nil {
+		t.FailNow()
+	}
+}
