@@ -15,34 +15,15 @@ var Value [7]int = [7]int{
 	0,
 }
 
-const INFINITY int = int(math.MaxInt32) // I win!
-
-func Evaluate(board *Board) int {
-	mate := Mated(board)
-	if mate == -1 {
-		return MaterialCount(board)
-	} else {
-		return mate
-	}
+type Line struct {
+	Moves []Move
 }
 
-/* Returns negative infinity if checkmate, zero if stalemate, -1 otherwise. */
-func Mated(b *Board) int {
-	moves := MoveGen(b)
-	if len(moves) > 0 {
-		return -1
-	}
-	var king byte
-	if b.ToMove == BLACK {
-		king = b.BlackKing
-	} else {
-		king = b.WhiteKing
-	}
-	if squareattacked(b, king, b.ToMove^BLACK) {
-		return -INFINITY
-	} else {
-		return 0
-	}
+const INFINITY int = int(math.MaxInt32) // I win!
+const MATE int = INFINITY - 10          // Value of a checkmate in 1
+
+func Evaluate(board *Board) int {
+	return MaterialCount(board)
 }
 
 func MaterialCount(b *Board) int {
@@ -59,21 +40,44 @@ func MaterialCount(b *Board) int {
 	return retval
 }
 
-func AlphaBeta(board *Board, depth, alpha, beta int) int {
+func AlphaBeta(board *Board, depth, alpha, beta, mate int, pline *Line) int {
+	legal := 0
 	if depth <= 0 {
 		return Evaluate(board)
 	}
+	line := new(Line)
 	moves := MoveGen(board)
 	for _, move := range moves {
 		undo := MakeMove(board, &move)
-		val := -AlphaBeta(board, depth-1, -beta, -alpha)
+		if Illegal(board) {
+			UnmakeMove(board, &move, undo)
+			continue
+		}
+		val := -AlphaBeta(board, depth-1, -beta, -alpha, mate-1, line)
 		UnmakeMove(board, &move, undo)
 		if val >= beta {
 			return beta
 		}
 		if val > alpha {
 			alpha = val
+			pline.Moves = append([]Move{move}, pline.Moves...)
+			line.Moves = append(pline.Moves, move)
 		}
+		legal++
+	}
+	if legal == 0 {
+		if !InCheck(board) {
+			return 0
+		}
+		return -mate
 	}
 	return alpha
+}
+
+func FindMove(board *Board) *Move {
+	line := new(Line)
+	score := AlphaBeta(board, 5, -INFINITY, INFINITY, MATE, line)
+	retval := &line.Moves[0]
+	retval.Score = score
+	return retval
 }

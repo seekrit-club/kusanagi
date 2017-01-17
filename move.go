@@ -33,7 +33,7 @@ type Move struct {
 	To      byte
 	Kind    byte
 	Promote byte
-	Score   int16
+	Score   int
 }
 
 type Undo struct {
@@ -102,6 +102,15 @@ func pawncap(b *Board, i byte, retval []Move, place byte, CanPromote bool) []Mov
 		retval = append(retval, Move{i, place, MoveEnPassant, EMPTY, 0})
 	}
 	return retval
+}
+
+func InCheck(b *Board) bool {
+	if b.ToMove == BLACK && squareattacked(b, b.BlackKing, WHITE) {
+		return true
+	} else if b.ToMove == WHITE && squareattacked(b, b.WhiteKing, BLACK) {
+		return true
+	}
+	return false
 }
 
 func squareattacked(b *Board, i byte, attacking byte) bool {

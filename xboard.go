@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -57,6 +58,9 @@ func XboardParse(line string, board *Board, verbose bool) (*Board, string) {
 				return board, err.Error()
 			}
 		}
+	case "go":
+		move := FindMove(board)
+		return board, fmt.Sprintln(move, move.Score)
 	case "d":
 		return board, PrintBoard(board)
 	}
