@@ -204,12 +204,29 @@ func TestMoveGenNonSliderCap(t *testing.T) {
 	}
 }
 
-func TestPerft(t *testing.T) {
+func TestPerftStart(t *testing.T) {
 	tperft(t, 1, 20)
 	tperft(t, 2, 400)
 	tperft(t, 3, 8902)
 	tperft(t, 4, 197281)
 	tperft(t, 5, 4865609)
+}
+
+func TestPerftKiwipete(t *testing.T) {
+	board, _ :=
+		Parse("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -")
+	tperftboard(t, 1, 48, board)
+	tperftboard(t, 2, 2039, board)
+	tperftboard(t, 3, 97862, board)
+	tperftboard(t, 4, 4085603, board)
+}
+
+func tperftboard(t *testing.T, depth int, expected uint64, b *Board) {
+	result := Perft(depth, b, false)
+	t.Log("Result of perft(", depth, "): ", result)
+	if result != expected {
+		t.FailNow()
+	}
 }
 
 func tperft(t *testing.T, depth int, expected uint64) {
