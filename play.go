@@ -5,12 +5,13 @@ import (
 )
 
 var Value [7]int = [7]int{
+	// Value of the pieces in centipawns
 	0,
-	1,
-	3,
-	3,
-	5,
-	9,
+	100,
+	300,
+	300,
+	500,
+	900,
 	0,
 }
 
