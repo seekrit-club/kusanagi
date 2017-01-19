@@ -111,97 +111,104 @@ func ClearBoard(b *Board) {
 	}
 }
 
+func fenfillboard(b *Board, field string) error {
+	var rank byte = 7
+	var file byte = 0
+	for _, runeValue := range field {
+		/* Fill the data */
+		if runeValue >= '1' && runeValue <= '8' {
+			inc, _ := strconv.Atoi(string(runeValue))
+			file += byte(inc)
+		} else if runeValue == '/' {
+			rank -= 1
+			file = 0
+		} else {
+			switch unicode.ToUpper(runeValue) {
+			case 'P':
+				b.Data[CartesianToIndex(file, rank)] |= PAWN
+			case 'N':
+				b.Data[CartesianToIndex(file, rank)] |= KNIGHT
+			case 'B':
+				b.Data[CartesianToIndex(file, rank)] |= BISHOP
+			case 'R':
+				b.Data[CartesianToIndex(file, rank)] |= ROOK
+			case 'Q':
+				b.Data[CartesianToIndex(file, rank)] |= QUEEN
+			case 'K':
+				b.Data[CartesianToIndex(file, rank)] |= KING
+			default:
+				return errors.New("Unexpected character in board data")
+			}
+			if unicode.IsLower(runeValue) {
+				b.Data[CartesianToIndex(file, rank)] |= BLACK
+			}
+			file += 1
+		}
+	}
+	return nil
+}
+
+func fenwho(b *Board, field string) error {
+	if field == "w" {
+		b.ToMove = WHITE
+	} else if field == "b" {
+		b.ToMove = BLACK
+	} else {
+		return errors.New("Unexpected character for active colour")
+	}
+	return nil
+}
+
+func fencastling(b *Board, field string) error {
+	for _, runeValue := range field {
+		/* Castling */
+		switch runeValue {
+		case '-':
+			b.Castle = 0
+		case 'K':
+			b.Castle |= CASTLEWK
+		case 'Q':
+			b.Castle |= CASTLEWQ
+		case 'k':
+			b.Castle |= CASTLEBK
+		case 'q':
+			b.Castle |= CASTLEBQ
+		default:
+			return errors.New("Unexpected character for castling")
+		}
+	}
+	return nil
+}
+
+func fenenpassant(b *Board, field string) {
+	epindex, err := AlgebraicToIndex(field)
+	if err == nil {
+		b.EnPassant = epindex
+	} else {
+		b.EnPassant = INVALID
+	}
+}
+
 func Parse(fen string) (*Board, error) {
 	b := new(Board)
 	ClearBoard(b)
-	var rank byte = 7
-	var file byte = 0
-	var eprank int = 0 /* Deliberate; this stores Atoi's result later on. */
-	var epfile byte = 0
-	stage := 0
-	for _, runeValue := range fen {
-		switch stage {
-		case 0:
-			/* Fill the data */
-			if runeValue >= '1' && runeValue <= '8' {
-				inc, _ := strconv.Atoi(string(runeValue))
-				file += byte(inc)
-			} else if runeValue == '/' {
-				rank -= 1
-				file = 0
-			} else if runeValue == ' ' {
-				stage++
-			} else {
-				switch unicode.ToUpper(runeValue) {
-				case 'P':
-					b.Data[CartesianToIndex(file, rank)] |= PAWN
-				case 'N':
-					b.Data[CartesianToIndex(file, rank)] |= KNIGHT
-				case 'B':
-					b.Data[CartesianToIndex(file, rank)] |= BISHOP
-				case 'R':
-					b.Data[CartesianToIndex(file, rank)] |= ROOK
-				case 'Q':
-					b.Data[CartesianToIndex(file, rank)] |= QUEEN
-				case 'K':
-					b.Data[CartesianToIndex(file, rank)] |= KING
-				default:
-					return nil, errors.New("Unexpected character in board data")
-				}
-				if unicode.IsLower(runeValue) {
-					b.Data[CartesianToIndex(file, rank)] |= BLACK
-				}
-				file += 1
-			}
-		case 1:
-			/* Get who's to play next */
-			switch runeValue {
-			case 'w':
-				b.ToMove = WHITE
-			case 'b':
-				b.ToMove = BLACK
-			case ' ':
-				stage++
-			default:
-				return nil, errors.New("Unexpected character for active colour")
-			}
-		case 2:
-			/* Castling */
-			switch runeValue {
-			case '-':
-				b.Castle = 0
-			case 'K':
-				b.Castle |= CASTLEWK
-			case 'Q':
-				b.Castle |= CASTLEWQ
-			case 'k':
-				b.Castle |= CASTLEBK
-			case 'q':
-				b.Castle |= CASTLEBQ
-			case ' ':
-				stage++
-			default:
-				return nil, errors.New("Unexpected character for castling")
-			}
-		case 3:
-			/* En-passant */
-			if runeValue >= '1' && runeValue <= '8' {
-				eprank, _ = strconv.Atoi(string(runeValue))
-				eprank--
-			} else if runeValue >= 'a' && runeValue <= 'h' {
-				epfile = byte(runeValue - 'a')
-			} else if runeValue == ' ' {
-				if b.EnPassant != INVALID {
-					b.EnPassant = CartesianToIndex(epfile, byte(eprank))
-				}
-				stage++
-			} else if runeValue == '-' {
-				b.EnPassant = INVALID
-			} else {
-				return nil, errors.New("Unexpected character for en passant")
-			}
-		}
+	fields := strings.Split(fen, " ")
+	if len(fields) < 4 {
+		return nil, errors.New("missing fields from fen string")
 	}
+	err := fenfillboard(b, fields[0])
+	if err != nil {
+		return nil, err
+	}
+	err = fenwho(b, fields[1])
+	if err != nil {
+		return nil, err
+	}
+	err = fencastling(b, fields[2])
+	if err != nil {
+		return nil, err
+	}
+	fenenpassant(b, fields[3])
 	b.WhiteKing, _ = FindKing(b, WHITE)
 	b.BlackKing, _ = FindKing(b, BLACK)
 	return b, nil
