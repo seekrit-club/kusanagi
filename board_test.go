@@ -4,6 +4,13 @@ import (
 	"testing"
 )
 
+func TestParseFailsOnPartialFen(t *testing.T) {
+	_, err := Parse("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR")
+	if err == nil {
+		t.FailNow()
+	}
+}
+
 func TestParseLoadEnPassantNone(t *testing.T) {
 	board, err := Parse(START)
 	if err != nil {
