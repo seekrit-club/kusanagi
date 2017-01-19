@@ -11,8 +11,9 @@ and are preparing. Please wait warmly until it is ready.
 
 ## status
 
-kusanagi has a working movegen, verified by dorpsgek's perft suite. This should
-provide a solid basis going forward to create a working engine.
+kusanagi has a working movegen, verified by dorpsgek's xboard version of 
+[this](http://www.rocechess.ch/perft.html) perft  test suite. This should provide
+a solid basis going forward to create a working engine.
 
 ## credits
 
