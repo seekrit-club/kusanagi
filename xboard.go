@@ -60,7 +60,7 @@ func XboardParse(line string, board *Board, verbose bool) (*Board, string) {
 		}
 	case "go":
 		move := FindMove(board)
-		return board, fmt.Sprintln(move, move.Score)
+		return board, fmt.Sprintln("move", MoveToLongAlgebraic(move))
 	case "d":
 		return board, PrintBoard(board)
 	}
