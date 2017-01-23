@@ -65,6 +65,10 @@ func XboardParse(line string, board *Board, verbose bool) (*Board, string) {
 		return board, PrintBoard(board)
 	case "xboard", "post", "nopost", "random":
 		return board, ""
+	case "ping":
+		if len(words) > 1 {
+			return board, fmt.Sprintf("pong %s\n", words[1])
+		}
 	}
 	return board, "\n"
 }
