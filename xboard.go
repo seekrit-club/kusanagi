@@ -51,6 +51,8 @@ func XboardParse(line string, board *Board, verbose bool) (*Board, string) {
 		}
 	case "setboard":
 		board, _ = Parse(strings.TrimPrefix(line, "setboard "))
+	case "new":
+		board, _ = Parse(START)
 	case "usermove":
 		if len(words) > 1 {
 			move, err := ParseMove(board, words[1])
