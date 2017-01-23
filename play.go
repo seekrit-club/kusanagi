@@ -22,6 +22,8 @@ type Line struct {
 const INFINITY int = int(math.MaxInt32) // I win!
 const MATE int = INFINITY - 10          // Value of a checkmate in 1
 
+var nodecount uint64
+
 func Evaluate(board *Board) int {
 	return MaterialCount(board)
 }
@@ -41,6 +43,7 @@ func MaterialCount(b *Board) int {
 }
 
 func AlphaBeta(board *Board, depth, alpha, beta, mate int, pline *Line) int {
+	nodecount++
 	legal := 0
 	if depth <= 0 {
 		return Evaluate(board)
@@ -75,6 +78,7 @@ func AlphaBeta(board *Board, depth, alpha, beta, mate int, pline *Line) int {
 }
 
 func FindMove(board *Board) *Move {
+	nodecount = 0
 	line := new(Line)
 	score := AlphaBeta(board, 5, -INFINITY, INFINITY, MATE, line)
 	retval := &line.Moves[0]
