@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -48,12 +49,16 @@ const (
 
 type Board struct {
 	/* Mailbox style, 10x12 board. */
-	Data      [120]byte
-	ToMove    byte
-	Castle    byte
-	EnPassant byte
-	WhiteKing byte
-	BlackKing byte
+	Data       [120]byte
+	ToMove     byte
+	Castle     byte
+	EnPassant  byte
+	WhiteKing  byte
+	BlackKing  byte
+	Clock      time.Duration
+	TimeRepeat int
+	TimePerTC  time.Duration
+	TimeInc    time.Duration
 }
 
 const (

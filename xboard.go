@@ -75,6 +75,46 @@ func XboardParse(line string, board *Board, verbose bool) (*Board, string) {
 		if len(words) > 1 {
 			return board, fmt.Sprintf("pong %s\n", words[1])
 		}
+	case "time":
+		if len(words) > 1 {
+			duration, err := time.ParseDuration(words[1] + "0ms")
+			if err == nil {
+				board.Clock = duration
+			} else {
+				return board, err.Error()
+			}
+		}
+	case "level":
+		if len(words) > 3 {
+			tr, err := strconv.Atoi(words[1])
+			if err != nil {
+				return board, err.Error()
+			}
+			var tptc time.Duration
+			tptcSpl := strings.Split(words[2], ":")
+			if len(tptcSpl) > 1 {
+				dur := fmt.Sprintf("%sm%ss", tptcSpl[0],
+					tptcSpl[1])
+				tptc, err = time.ParseDuration(dur)
+				if err != nil {
+					return board, err.Error()
+				}
+			} else {
+				tptc, err = time.ParseDuration(words[2] + "m")
+				if err != nil {
+					return board, err.Error()
+				}
+			}
+			var ti time.Duration
+			ti, err = time.ParseDuration(words[3] + "s")
+			if err != nil {
+				return board, err.Error()
+			}
+			board.TimeRepeat = tr
+			board.TimePerTC = tptc
+			board.TimeInc = ti
+			return board, fmt.Sprintln("#", tr, tptc, ti)
+		}
 	}
 	return board, "\n"
 }
