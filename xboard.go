@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const XBOARDFEATURES string = "feature done=0 usermove=1 setboard=1 myname=\"Kusanagi\" sigterm=0 sigint=0 done=1 ping=1\n" // our response to the protover command
+
 func XboardParse(line string, board *Board, verbose bool) (*Board, string) {
 	if verbose {
 		log.Println(line)
@@ -63,6 +65,8 @@ func XboardParse(line string, board *Board, verbose bool) (*Board, string) {
 		return board, fmt.Sprintln("move", MoveToLongAlgebraic(move))
 	case "d":
 		return board, PrintBoard(board)
+	case "protover":
+		return board, XBOARDFEATURES
 	case "xboard", "post", "nopost", "random":
 		return board, ""
 	case "ping":
