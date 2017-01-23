@@ -63,6 +63,8 @@ func XboardParse(line string, board *Board, verbose bool) (*Board, string) {
 		return board, fmt.Sprintln("move", MoveToLongAlgebraic(move))
 	case "d":
 		return board, PrintBoard(board)
+	case "xboard", "post", "nopost", "random":
+		return board, ""
 	}
 	return board, "\n"
 }
