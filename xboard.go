@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const XBOARDFEATURES string = "feature done=0 usermove=1 setboard=1 myname=\"Kusanagi\" sigterm=0 sigint=0 done=1 ping=1\n" // our response to the protover command
+const XBOARDFEATURES string = "feature done=0 usermove=1 setboard=1 myname=\"Kusanagi\" sigterm=0 sigint=0 debug=1 ping=1 colors=0 done=1\n" // our response to the protover command
 
 func XboardParse(line string, board *Board, verbose bool) (*Board, string) {
 	if verbose {
