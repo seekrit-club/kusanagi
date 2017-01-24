@@ -92,7 +92,7 @@ func AllotTime(board *Board) time.Duration {
 }
 
 func ThinkingOutput(depth, score int, start time.Time, pv *Line) {
-	fmt.Println(depth, score, int64(time.Since(start) / time.Millisecond)/10, nodecount, pv)
+	fmt.Println(depth, score, int64(time.Since(start)/time.Millisecond)/10, nodecount, pv)
 }
 
 func FindMove(board *Board) *Move {
