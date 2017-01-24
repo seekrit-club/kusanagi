@@ -47,18 +47,22 @@ const (
 	CASTLEBQ byte = 0x08
 )
 
-type Board struct {
-	/* Mailbox style, 10x12 board. */
-	Data       [120]byte
-	ToMove     byte
-	Castle     byte
-	EnPassant  byte
-	WhiteKing  byte
-	BlackKing  byte
+var (
 	Clock      time.Duration
 	TimeRepeat int
 	TimePerTC  time.Duration
 	TimeInc    time.Duration
+)
+
+type Board struct {
+	/* Mailbox style, 10x12 board. */
+	Data      [120]byte
+	ToMove    byte
+	Castle    byte
+	EnPassant byte
+	WhiteKing byte
+	BlackKing byte
+	Moves     int
 }
 
 const (

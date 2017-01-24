@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"math"
+	"time"
 )
 
 var Value [7]int = [7]int{
@@ -77,11 +79,33 @@ func AlphaBeta(board *Board, depth, alpha, beta, mate int, pline *Line) int {
 	return alpha
 }
 
+func AllotTime(board *Board) time.Duration {
+	repeat := TimeRepeat
+	if repeat <= 0 {
+		repeat = 40
+	}
+	return Clock/time.Duration((board.Moves%repeat)+1) - 20*time.Millisecond
+}
+
+func ThinkingOutput(depth, score int, start time.Time, pv *Line) {
+	fmt.Println(depth, score, time.Since(start), pv)
+}
+
 func FindMove(board *Board) *Move {
+	start := time.Now()
+	timetomove := AllotTime(board)
+	bedoneby := start.Add(timetomove)
 	nodecount = 0
-	line := new(Line)
-	score := AlphaBeta(board, 5, -INFINITY, INFINITY, MATE, line)
-	retval := &line.Moves[0]
-	retval.Score = score
-	return retval
+	for depth := 1; ; depth++ {
+		line := new(Line)
+		score := AlphaBeta(board, depth, -INFINITY, INFINITY, MATE, line)
+		ThinkingOutput(depth, score, start, line)
+		fmt.Println(start, bedoneby)
+		retval := &line.Moves[0]
+		if time.Now().After(bedoneby) {
+			retval.Score = score
+			Clock -= time.Since(start)
+			return retval
+		}
+	}
 }

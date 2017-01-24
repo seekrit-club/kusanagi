@@ -58,12 +58,18 @@ func XboardParse(line string, board *Board, verbose bool) (*Board, string) {
 			move, err := ParseMove(board, words[1])
 			if err == nil {
 				MakeMove(board, move)
+				board.Moves++
 			} else {
 				return board, err.Error()
 			}
 		}
 	case "go":
 		move := FindMove(board)
+		if move == nil {
+			return board, "resign\n"
+		}
+		board.Moves++
+		MakeMove(board, move)
 		return board, fmt.Sprintln("move", MoveToLongAlgebraic(move))
 	case "d":
 		return board, PrintBoard(board)
@@ -79,7 +85,7 @@ func XboardParse(line string, board *Board, verbose bool) (*Board, string) {
 		if len(words) > 1 {
 			duration, err := time.ParseDuration(words[1] + "0ms")
 			if err == nil {
-				board.Clock = duration
+				Clock = duration
 			} else {
 				return board, err.Error()
 			}
@@ -110,9 +116,10 @@ func XboardParse(line string, board *Board, verbose bool) (*Board, string) {
 			if err != nil {
 				return board, err.Error()
 			}
-			board.TimeRepeat = tr
-			board.TimePerTC = tptc
-			board.TimeInc = ti
+			TimeRepeat = tr
+			TimePerTC = tptc
+			TimeInc = ti
+			Clock = tptc
 			return board, fmt.Sprintln("#", tr, tptc, ti)
 		}
 	}

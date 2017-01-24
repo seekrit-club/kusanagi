@@ -2,6 +2,7 @@ package main
 
 import (
 	"testing"
+	"time"
 )
 
 func TestMateInOne(t *testing.T) {
@@ -9,7 +10,11 @@ func TestMateInOne(t *testing.T) {
 	to, _ := AlgebraicToIndex("f7")
 	from, _ := AlgebraicToIndex("a7")
 	move := FindMove(board)
+	Clock, _ = time.ParseDuration("5m")
+	TimeInc, _ = time.ParseDuration("8s")
+
 	if move.To != to || move.From != from {
+		t.Log(move)
 		t.FailNow()
 	}
 }
