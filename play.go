@@ -84,11 +84,15 @@ func AllotTime(board *Board) time.Duration {
 	if repeat <= 0 {
 		repeat = 40
 	}
-	return Clock/time.Duration((board.Moves%repeat)+1) - 20*time.Millisecond
+	moves := repeat - board.Moves
+	for moves <= 0 {
+		moves += repeat
+	}
+	return (Clock/time.Duration(moves+1))/10 - 20*time.Millisecond
 }
 
 func ThinkingOutput(depth, score int, start time.Time, pv *Line) {
-	fmt.Println(depth, score, time.Since(start), pv)
+	fmt.Println(depth, score, int64(time.Since(start) / time.Millisecond)/10, nodecount, pv)
 }
 
 func FindMove(board *Board) *Move {
@@ -100,7 +104,6 @@ func FindMove(board *Board) *Move {
 		line := new(Line)
 		score := AlphaBeta(board, depth, -INFINITY, INFINITY, MATE, line)
 		ThinkingOutput(depth, score, start, line)
-		fmt.Println(start, bedoneby)
 		retval := &line.Moves[0]
 		if time.Now().After(bedoneby) {
 			retval.Score = score
