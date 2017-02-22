@@ -11,9 +11,15 @@ and are preparing. Please wait warmly until it is ready.
 
 ## status
 
-kusanagi has a working movegen, verified by dorpsgek's xboard version of 
-[this](http://www.rocechess.ch/perft.html) perft  test suite. This should provide
-a solid basis going forward to create a working engine.
+As of the 100th commit, daed2d3, kusanagi is a working chess engine! Of course,
+due to many, many issues it's a very weak engine - you'll not struggle to beat
+it if you can play chess. For the curious, a pgn file of the first on-record
+chess game played by kusanagi is available in the games/ directory of this
+repository.
+
+My mentor/partner-in-crime, ZirconiumX, is filing possible future improvements as
+issues. I plan to categorize these by the MoSCoW method. Any help on any of
+these is greatly appreciated.
 
 ## credits
 
