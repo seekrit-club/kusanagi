@@ -27,13 +27,23 @@ func main() {
 	board := InitState()
 	reader := bufio.NewReader(os.Stdin)
 	var result string
+        engine_side := BLACK
 	for {
+                if board.ToMove == engine_side {
+                    move := FindMove(board)
+                    if move == nil {
+                        fmt.Println("resign")
+                    }
+                    board.Moves++
+                    MakeMove(board, move)
+                    fmt.Println("move", MoveToLongAlgebraic(move))
+                }
 		input, err := reader.ReadString('\n')
 		if input == "quit\n" || err == io.EOF {
 			return
 		} else {
 			board, result = XboardParse(strings.TrimSpace(input),
-				board, *verbose)
+				board, *verbose, &engine_side)
 			fmt.Print(result)
 		}
 	}
