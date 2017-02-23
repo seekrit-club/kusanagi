@@ -435,3 +435,19 @@ func TestParseMoveInvalid(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestFilterCapturesOnEmptyList(t *testing.T) {
+	board, _ := Parse(START)
+	movelist := FilterCaptures(MoveGen(board))
+	if len(movelist) != 0 {
+		t.FailNow()
+	}
+}
+
+func TestFilterCapturesOnMixedList(t *testing.T) {
+	board, _ := Parse("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
+	movelist := FilterCaptures(MoveGen(board))
+	if len(movelist) != 1 {
+		t.FailNow()
+	}
+}

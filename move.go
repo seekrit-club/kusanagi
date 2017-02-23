@@ -388,12 +388,11 @@ func ParseMove(b *Board, m string) (*Move, error) {
 }
 
 func FilterCaptures(movelist []Move) []Move {
-    captures := make([]Move, 0, 32)
-    for _, move := range movelist {
-        if move.Kind == MoveCapture || move.Kind == MoveCapPromote {
-            captures = append(captures, move)
-        }
-    }
-    return captures
+	captures := make([]Move, 0, 32)
+	for _, move := range movelist {
+		if move.Kind == MoveCapture || move.Kind == MoveCapPromote {
+			captures = append(captures, move)
+		}
+	}
+	return captures
 }
-
