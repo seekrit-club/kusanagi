@@ -386,3 +386,14 @@ func ParseMove(b *Board, m string) (*Move, error) {
 	}
 	return nil, errors.New("Move not legal")
 }
+
+func FilterCaptures(movelist []Move) []Move {
+    captures := make([]Move, 0, 32)
+    for _, move := range movelist {
+        if move.Kind == MoveCapture || move.Kind == MoveCapPromote {
+            captures = append(captures, move)
+        }
+    }
+    return captures
+}
+
