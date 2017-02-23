@@ -6,17 +6,6 @@ import (
 	"time"
 )
 
-var Value [7]int = [7]int{
-	// Value of the pieces in centipawns
-	0,
-	100,
-	300,
-	300,
-	500,
-	900,
-	0,
-}
-
 type Line struct {
 	Moves []Move
 }
