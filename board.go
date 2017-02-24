@@ -33,6 +33,7 @@ const (
 const (
 	WHITE byte = 0x00
 	BLACK byte = 0x08
+	FORCE byte = 0x0F
 )
 
 const (

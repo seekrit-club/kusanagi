@@ -66,6 +66,9 @@ func XboardParse(line string, board *Board, verbose bool, engine_side *byte) (*B
 	case "go":
 		*engine_side = board.ToMove
 		return board, ""
+	case "force":
+		*engine_side = FORCE
+		return board, ""
 	case "d":
 		return board, PrintBoard(board)
 	case "protover":
