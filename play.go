@@ -33,11 +33,39 @@ func MaterialCount(b *Board) int {
 	return retval
 }
 
+func Quies(board *Board, alpha, beta int) int {
+	nodecount++
+	eval := Evaluate(board)
+	if eval >= beta {
+		return beta
+	}
+	if eval > alpha {
+		alpha = eval
+	}
+	moves := FilterCaptures(MoveGen(board))
+	for _, move := range moves {
+		undo := MakeMove(board, &move)
+		if Illegal(board) {
+			UnmakeMove(board, &move, undo)
+			continue
+		}
+		val := -Quies(board, -beta, -alpha)
+		UnmakeMove(board, &move, undo)
+		if val >= beta {
+			return beta
+		}
+		if val > alpha {
+			alpha = val
+		}
+	}
+	return alpha
+}
+
 func AlphaBeta(board *Board, depth, alpha, beta, mate int, pline *Line) int {
 	nodecount++
 	legal := 0
 	if depth <= 0 {
-		return Evaluate(board)
+		return Quies(board, alpha, beta)
 	}
 	line := new(Line)
 	moves := MoveGen(board)
