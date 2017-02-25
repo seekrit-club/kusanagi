@@ -40,6 +40,7 @@ type Undo struct {
 	ToData    byte
 	EnPassant byte
 	Castle    byte
+	Index     byte
 }
 
 func pawnmove(b *Board, i byte, retval []Move) []Move {
@@ -227,7 +228,7 @@ func MoveGen(b *Board) []Move {
 	if CanCastle(b, b.ToMove, KING) {
 		retval = kscastle(b, retval)
 	}
-	for i := A1; i <= H8; i++ {
+	for _, i := range b.PieceList {
 		if !OnBoard(i) || GetPiece(b.Data[i]) == EMPTY || GetSide(b.Data[i]) != b.ToMove {
 			continue
 		}
@@ -241,7 +242,7 @@ func MoveGen(b *Board) []Move {
 }
 
 func MakeMove(b *Board, m *Move) *Undo {
-	retval := &Undo{b.Data[m.To], b.EnPassant, b.Castle}
+	retval := &Undo{b.Data[m.To], b.EnPassant, b.Castle, OFFBOARD}
 	if GetPiece(b.Data[m.From]) == KING {
 		if b.ToMove == BLACK {
 			b.BlackKing = m.To
@@ -249,9 +250,15 @@ func MakeMove(b *Board, m *Move) *Undo {
 			b.WhiteKing = m.To
 		}
 	}
+	if m.Kind == MoveCapture || m.Kind == MoveCapPromote {
+		retval.Index, _ = FindPiece(b, m.To)
+		b.PieceList[retval.Index] = OFFBOARD
+	}
 	b.EnPassant = INVALID
 	b.Data[m.To] = b.Data[m.From]
 	b.Data[m.From] = EMPTY
+	idx, _ := FindPiece(b, m.From)
+	b.PieceList[idx] = m.To
 	switch m.Kind {
 	case MoveQuiet:
 		/* Do nothing */
@@ -263,10 +270,13 @@ func MakeMove(b *Board, m *Move) *Undo {
 		}
 	case MoveEnPassant:
 		if b.ToMove == BLACK {
+			retval.Index, _ = FindPiece(b, m.To+10)
 			b.Data[m.To+10] = EMPTY
 		} else {
+			retval.Index, _ = FindPiece(b, m.To-10)
 			b.Data[m.To-10] = EMPTY
 		}
+		b.PieceList[retval.Index] = OFFBOARD
 	case MoveCapPromote:
 		fallthrough
 	case MovePromote:
@@ -274,10 +284,14 @@ func MakeMove(b *Board, m *Move) *Undo {
 	case MoveCastle:
 		if m.To < m.From {
 			/* Queenside */
+			retval.Index, _ = FindPiece(b, m.To-2)
+			b.PieceList[retval.Index] = m.To + 1
 			b.Data[m.To+1] = b.Data[m.To-2]
 			b.Data[m.To-2] = EMPTY
 		} else {
 			/* Kingside */
+			retval.Index, _ = FindPiece(b, m.To+1)
+			b.PieceList[retval.Index] = m.To - 1
 			b.Data[m.To-1] = b.Data[m.To+1]
 			b.Data[m.To+1] = EMPTY
 		}
@@ -290,27 +304,36 @@ func MakeMove(b *Board, m *Move) *Undo {
 func UnmakeMove(b *Board, m *Move, u *Undo) {
 	b.Data[m.From] = b.Data[m.To]
 	b.Data[m.To] = u.ToData
+	idx, _ := FindPiece(b, m.To)
+	b.PieceList[idx] = m.From
 	b.EnPassant = u.EnPassant
 	b.Castle = u.Castle
 	b.ToMove ^= BLACK
 	switch m.Kind {
+	case MoveCapture:
+		b.PieceList[u.Index] = m.To
 	case MoveEnPassant:
 		if b.ToMove == BLACK {
+			b.PieceList[u.Index] = m.To + 10
 			b.Data[m.To+10] = (b.ToMove ^ BLACK) | PAWN
 		} else {
+			b.PieceList[u.Index] = m.To - 10
 			b.Data[m.To-10] = (b.ToMove ^ BLACK) | PAWN
 		}
 	case MoveCapPromote:
+		b.PieceList[u.Index] = m.To
 		fallthrough
 	case MovePromote:
 		b.Data[m.From] = b.ToMove | PAWN
 	case MoveCastle:
 		if m.To < m.From {
 			/* Queenside */
+			b.PieceList[u.Index] = m.To - 2
 			b.Data[m.To-2] = b.Data[m.To+1]
 			b.Data[m.To+1] = EMPTY
 		} else {
 			/* Kingside */
+			b.PieceList[u.Index] = m.To + 1
 			b.Data[m.To+1] = b.Data[m.To-1]
 			b.Data[m.To-1] = EMPTY
 		}

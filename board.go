@@ -64,6 +64,7 @@ type Board struct {
 	WhiteKing byte
 	BlackKing byte
 	Moves     int
+	PieceList [32]byte
 }
 
 const (
@@ -119,11 +120,15 @@ func ClearBoard(b *Board) {
 			b.Data[i] = OFFBOARD
 		}
 	}
+	for i = 0; i < 32; i++ {
+		b.PieceList[i] = OFFBOARD
+	}
 }
 
 func fenfillboard(b *Board, field string) error {
 	var rank byte = 7
 	var file byte = 0
+	var idx byte = 0
 	for _, runeValue := range field {
 		/* Fill the data */
 		if runeValue >= '1' && runeValue <= '8' {
@@ -133,26 +138,34 @@ func fenfillboard(b *Board, field string) error {
 			rank -= 1
 			file = 0
 		} else {
+			sq := CartesianToIndex(file, rank)
 			switch unicode.ToUpper(runeValue) {
 			case 'P':
-				b.Data[CartesianToIndex(file, rank)] |= PAWN
+				b.Data[sq] |= PAWN
+				b.PieceList[idx] = sq
 			case 'N':
-				b.Data[CartesianToIndex(file, rank)] |= KNIGHT
+				b.Data[sq] |= KNIGHT
+				b.PieceList[idx] = sq
 			case 'B':
-				b.Data[CartesianToIndex(file, rank)] |= BISHOP
+				b.Data[sq] |= BISHOP
+				b.PieceList[idx] = sq
 			case 'R':
-				b.Data[CartesianToIndex(file, rank)] |= ROOK
+				b.Data[sq] |= ROOK
+				b.PieceList[idx] = sq
 			case 'Q':
-				b.Data[CartesianToIndex(file, rank)] |= QUEEN
+				b.Data[sq] |= QUEEN
+				b.PieceList[idx] = sq
 			case 'K':
-				b.Data[CartesianToIndex(file, rank)] |= KING
+				b.Data[sq] |= KING
+				b.PieceList[idx] = sq
 			default:
 				return errors.New("Unexpected character in board data")
 			}
 			if unicode.IsLower(runeValue) {
-				b.Data[CartesianToIndex(file, rank)] |= BLACK
+				b.Data[sq] |= BLACK
 			}
 			file += 1
+			idx += 1
 		}
 	}
 	return nil
@@ -387,4 +400,13 @@ func CanCastle(b *Board, color, side byte) bool {
 		}
 	}
 	return b.Castle&flag != 0
+}
+
+func FindPiece(b *Board, target byte) (byte, error) {
+	for idx, sq := range b.PieceList {
+		if sq == target {
+			return byte(idx), nil
+		}
+	}
+	return OFFBOARD, errors.New("Square is not in piece list")
 }

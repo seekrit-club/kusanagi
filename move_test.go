@@ -13,7 +13,9 @@ func TestMakeMovePawnPush(t *testing.T) {
 	from := byte(CartesianToIndex(0, 1))
 	move := Move{from, to, MoveQuiet, EMPTY, 0}
 	MakeMove(board, &move)
-	if GetPiece(board.Data[from]) != EMPTY || GetPiece(board.Data[to]) != PAWN {
+	res, err := FindPiece(board, to)
+	if GetPiece(board.Data[from]) != EMPTY || GetPiece(board.Data[to]) != PAWN ||
+		err != nil || board.PieceList[res] != to {
 		t.Fail()
 	}
 }
@@ -27,8 +29,10 @@ func TestMakeMoveWhitePawnDoublePush(t *testing.T) {
 	from := byte(CartesianToIndex(0, 1))
 	move := Move{from, to, MoveDoublePush, EMPTY, 0}
 	MakeMove(board, &move)
+	res, err := FindPiece(board, to)
 	if GetPiece(board.Data[from]) != EMPTY || GetPiece(board.Data[to]) !=
-		PAWN || board.EnPassant != CartesianToIndex(0, 2) {
+		PAWN || board.EnPassant != CartesianToIndex(0, 2) ||
+		err != nil || board.PieceList[res] != to {
 		t.Fail()
 	}
 }
@@ -43,8 +47,10 @@ func TestMakeMoveBlackPawnDoublePush(t *testing.T) {
 	from := byte(CartesianToIndex(0, 6))
 	move := Move{from, to, MoveDoublePush, EMPTY, 0}
 	MakeMove(board, &move)
+	res, err := FindPiece(board, to)
 	if GetPiece(board.Data[from]) != EMPTY || GetPiece(board.Data[to]) !=
-		PAWN || board.EnPassant != CartesianToIndex(0, 5) {
+		PAWN || board.EnPassant != CartesianToIndex(0, 5) ||
+		err != nil || board.PieceList[res] != to {
 		t.Fail()
 	}
 }
