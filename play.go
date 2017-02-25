@@ -24,13 +24,43 @@ func MaterialCount(b *Board) int {
 	for i := A1; i <= H8; i++ {
 		if OnBoard(i) && GetPiece(b.Data[i]) != EMPTY {
 			if GetSide(b.Data[i]) == b.ToMove {
-				retval += Value[GetPiece(b.Data[i])]
+				retval += Value[GetPiece(b.Data[i])] + Pst(GetPiece(b.Data[i]), b.ToMove, i)
 			} else {
-				retval -= Value[GetPiece(b.Data[i])]
+				retval -= (Value[GetPiece(b.Data[i])] + Pst(GetPiece(b.Data[i]), b.ToMove, i))
 			}
 		}
 	}
 	return retval
+}
+
+func Pst(piece, side, index byte) int {
+	switch piece {
+	case PAWN:
+		return GetPst(index, side, pstPawnMg)
+	case KNIGHT:
+		return GetPst(index, side, pstKnightMg)
+	case BISHOP:
+		return GetPst(index, side, pstBishopMg)
+	case ROOK:
+		return GetPst(index, side, pstKnightMg)
+	case QUEEN:
+		return GetPst(index, side, pstQueenMg)
+	case KING:
+		return GetPst(index, side, pstKingMg)
+	default:
+		return 0
+	}
+}
+
+func GetPst(index, side byte, table [64]int) int {
+	file, rank := IndexToCartesian(index)
+	var tableindex byte
+	if side == BLACK {
+		tableindex = (8 * (7 - rank)) + file
+	} else {
+		tableindex = (8 * rank) + file
+	}
+	return table[tableindex]
 }
 
 func Quies(board *Board, alpha, beta int) int {
