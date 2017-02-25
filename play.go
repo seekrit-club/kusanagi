@@ -21,7 +21,7 @@ func Evaluate(board *Board) int {
 
 func MaterialCount(b *Board) int {
 	var retval int
-	for i := A1; i <= H8; i++ {
+	for _, i := range b.PieceList {
 		if OnBoard(i) && GetPiece(b.Data[i]) != EMPTY {
 			if GetSide(b.Data[i]) == b.ToMove {
 				retval += Value[GetPiece(b.Data[i])] + Pst(GetPiece(b.Data[i]), b.ToMove, i)
