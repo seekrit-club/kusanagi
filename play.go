@@ -42,7 +42,7 @@ func Pst(piece, side, index byte) int {
 	case BISHOP:
 		return GetPst(index, side, pstBishopMg)
 	case ROOK:
-		return GetPst(index, side, pstKnightMg)
+		return GetPst(index, side, pstRookMg)
 	case QUEEN:
 		return GetPst(index, side, pstQueenMg)
 	case KING:
