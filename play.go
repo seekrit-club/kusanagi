@@ -85,7 +85,6 @@ func GetPst(index, side byte, tableMg [64]int, tableEg [64]int, endgame bool) in
 func Quies(board *Board, alpha, beta int) int {
 	nodecount++
 	if abort {
-		abort = true
 		return 0
 	}
 	eval := Evaluate(board)
@@ -167,7 +166,7 @@ func AllotTime(board *Board) time.Duration {
 	for moves <= 0 {
 		moves += repeat
 	}
-	return (Clock/time.Duration(moves+1))/10 - 20*time.Millisecond
+	return (Clock/time.Duration(moves+1) - 20*time.Millisecond)
 }
 
 func ThinkingOutput(depth, score int, start time.Time, pv *Line) {
@@ -176,7 +175,7 @@ func ThinkingOutput(depth, score int, start time.Time, pv *Line) {
 
 func SleepThread(board *Board, start time.Time) {
 	bedoneby := AllotTime(board)
-	fmt.Println("# allocated ", bedoneby)
+	fmt.Println("# ", Clock, ": allocated ", bedoneby)
 	time.Sleep(bedoneby)
 	abort = true
 }
@@ -186,7 +185,6 @@ func FindMove(board *Board) *Move {
 	abort = false
 	nodecount = 0
 	retval := new(Move)
-	go SleepThread(board, start)
 	for depth := 1; ; depth++ {
 		line := new(Line)
 		score := AlphaBeta(board, depth, -INFINITY, INFINITY, MATE, line)
@@ -196,6 +194,11 @@ func FindMove(board *Board) *Move {
 		} else {
 			break
 		}
+
+                if depth == 1 {
+                    Clock -= time.Since(start)
+                    go SleepThread(board, start)
+                }
 	}
 	return retval
 }
