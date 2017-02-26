@@ -14,6 +14,7 @@ const INFINITY int = int(math.MaxInt32) // I win!
 const MATE int = INFINITY - 10          // Value of a checkmate in 1
 
 var nodecount uint64
+var abort bool
 
 func Evaluate(board *Board) int {
 	phase := calcphase(board)
@@ -83,6 +84,9 @@ func GetPst(index, side byte, tableMg [64]int, tableEg [64]int, endgame bool) in
 
 func Quies(board *Board, alpha, beta int) int {
 	nodecount++
+	if abort {
+		return 0
+	}
 	eval := Evaluate(board)
 	if eval >= beta {
 		return beta
@@ -99,6 +103,9 @@ func Quies(board *Board, alpha, beta int) int {
 		}
 		val := -Quies(board, -beta, -alpha)
 		UnmakeMove(board, &move, undo)
+		if abort {
+			return 0
+		}
 		if val >= beta {
 			return beta
 		}
@@ -111,6 +118,9 @@ func Quies(board *Board, alpha, beta int) int {
 
 func AlphaBeta(board *Board, depth, alpha, beta, mate int, pline *Line) int {
 	nodecount++
+	if abort {
+		return 0
+	}
 	legal := 0
 	if depth <= 0 {
 		return Quies(board, alpha, beta)
@@ -125,6 +135,9 @@ func AlphaBeta(board *Board, depth, alpha, beta, mate int, pline *Line) int {
 		}
 		val := -AlphaBeta(board, depth-1, -beta, -alpha, mate-1, line)
 		UnmakeMove(board, &move, undo)
+		if abort {
+			return 0
+		}
 		if val >= beta {
 			return beta
 		}
@@ -153,27 +166,39 @@ func AllotTime(board *Board) time.Duration {
 	for moves <= 0 {
 		moves += repeat
 	}
-	return (Clock/time.Duration(moves+1))/10 - 20*time.Millisecond
+	return (Clock/time.Duration(moves+1) - 20*time.Millisecond)
 }
 
 func ThinkingOutput(depth, score int, start time.Time, pv *Line) {
 	fmt.Println(depth, score, int64(time.Since(start)/time.Millisecond)/10, nodecount, pv)
 }
 
+func SleepThread(board *Board, start time.Time) {
+	bedoneby := AllotTime(board)
+	fmt.Println("# ", Clock, ": allocated ", bedoneby)
+	time.Sleep(bedoneby)
+	abort = true
+}
+
 func FindMove(board *Board) *Move {
 	start := time.Now()
-	timetomove := AllotTime(board)
-	bedoneby := start.Add(timetomove)
+	abort = false
 	nodecount = 0
+	retval := new(Move)
 	for depth := 1; ; depth++ {
 		line := new(Line)
 		score := AlphaBeta(board, depth, -INFINITY, INFINITY, MATE, line)
 		ThinkingOutput(depth, score, start, line)
-		retval := &line.Moves[0]
-		if time.Now().After(bedoneby) {
-			retval.Score = score
-			Clock -= time.Since(start)
-			return retval
+		if !abort {
+			retval = &line.Moves[0]
+		} else {
+			break
 		}
+
+                if depth == 1 {
+                    Clock -= time.Since(start)
+                    go SleepThread(board, start)
+                }
 	}
+	return retval
 }
