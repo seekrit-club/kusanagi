@@ -16,43 +16,49 @@ const MATE int = INFINITY - 10          // Value of a checkmate in 1
 var nodecount uint64
 
 func Evaluate(board *Board) int {
-	return MaterialCount(board)
+	return MaterialCount(board, false)
 }
 
-func MaterialCount(b *Board) int {
+func MaterialCount(b *Board, endgame bool) int {
 	var retval int
 	for _, i := range b.PieceList {
 		if OnBoard(i) && GetPiece(b.Data[i]) != EMPTY {
 			if GetSide(b.Data[i]) == b.ToMove {
-				retval += Value[GetPiece(b.Data[i])] + Pst(GetPiece(b.Data[i]), b.ToMove, i)
+				retval += Value[GetPiece(b.Data[i])] + Pst(GetPiece(b.Data[i]), b.ToMove, i, endgame)
 			} else {
-				retval -= (Value[GetPiece(b.Data[i])] + Pst(GetPiece(b.Data[i]), b.ToMove, i))
+				retval -= (Value[GetPiece(b.Data[i])] + Pst(GetPiece(b.Data[i]), b.ToMove, i, endgame))
 			}
 		}
 	}
 	return retval
 }
 
-func Pst(piece, side, index byte) int {
+func Pst(piece, side, index byte, endgame bool) int {
 	switch piece {
 	case PAWN:
-		return GetPst(index, side, pstPawnMg)
+		return GetPst(index, side, pstPawnMg, pstPawnEg, endgame)
 	case KNIGHT:
-		return GetPst(index, side, pstKnightMg)
+		return GetPst(index, side, pstKnightMg, pstKnightEg, endgame)
 	case BISHOP:
-		return GetPst(index, side, pstBishopMg)
+		return GetPst(index, side, pstBishopMg, pstBishopEg, endgame)
 	case ROOK:
-		return GetPst(index, side, pstRookMg)
+		return GetPst(index, side, pstRookMg, pstRookEg, endgame)
 	case QUEEN:
-		return GetPst(index, side, pstQueenMg)
+		return GetPst(index, side, pstQueenMg, pstQueenMg, endgame)
 	case KING:
-		return GetPst(index, side, pstKingMg)
+		return GetPst(index, side, pstKingMg, pstKingEg, endgame)
 	default:
 		return 0
 	}
 }
 
-func GetPst(index, side byte, table [64]int) int {
+func GetPst(index, side byte, tableMg [64]int, tableEg [64]int, endgame bool) int {
+	var table []int
+	if endgame {
+		table = tableEg[:]
+	} else {
+		table = tableMg[:]
+	}
 	file, rank := IndexToCartesian(index)
 	var tableindex byte
 	if side == BLACK {
