@@ -53,6 +53,7 @@ var (
 	TimeRepeat int
 	TimePerTC  time.Duration
 	TimeInc    time.Duration
+	BeDoneBy   time.Time
 )
 
 type Board struct {

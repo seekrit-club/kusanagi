@@ -14,6 +14,7 @@ const INFINITY int = int(math.MaxInt32) // I win!
 const MATE int = INFINITY - 10          // Value of a checkmate in 1
 
 var nodecount uint64
+var abort bool
 
 func Evaluate(board *Board) int {
 	phase := calcphase(board)
@@ -83,6 +84,10 @@ func GetPst(index, side byte, tableMg [64]int, tableEg [64]int, endgame bool) in
 
 func Quies(board *Board, alpha, beta int) int {
 	nodecount++
+	if abort || nodecount&1023 == 1023 && time.Now().After(BeDoneBy) {
+		abort = true
+		return 0
+	}
 	eval := Evaluate(board)
 	if eval >= beta {
 		return beta
@@ -99,6 +104,9 @@ func Quies(board *Board, alpha, beta int) int {
 		}
 		val := -Quies(board, -beta, -alpha)
 		UnmakeMove(board, &move, undo)
+		if abort {
+			return 0
+		}
 		if val >= beta {
 			return beta
 		}
@@ -111,6 +119,10 @@ func Quies(board *Board, alpha, beta int) int {
 
 func AlphaBeta(board *Board, depth, alpha, beta, mate int, pline *Line) int {
 	nodecount++
+	if abort || nodecount&1023 == 1023 && time.Now().After(BeDoneBy) {
+		abort = true
+		return 0
+	}
 	legal := 0
 	if depth <= 0 {
 		return Quies(board, alpha, beta)
@@ -125,6 +137,9 @@ func AlphaBeta(board *Board, depth, alpha, beta, mate int, pline *Line) int {
 		}
 		val := -AlphaBeta(board, depth-1, -beta, -alpha, mate-1, line)
 		UnmakeMove(board, &move, undo)
+		if abort {
+			return 0
+		}
 		if val >= beta {
 			return beta
 		}
@@ -163,17 +178,22 @@ func ThinkingOutput(depth, score int, start time.Time, pv *Line) {
 func FindMove(board *Board) *Move {
 	start := time.Now()
 	timetomove := AllotTime(board)
-	bedoneby := start.Add(timetomove)
+	BeDoneBy := start.Add(timetomove)
 	nodecount = 0
+	abort = false
+	retval := new(Move)
 	for depth := 1; ; depth++ {
 		line := new(Line)
 		score := AlphaBeta(board, depth, -INFINITY, INFINITY, MATE, line)
 		ThinkingOutput(depth, score, start, line)
-		retval := &line.Moves[0]
-		if time.Now().After(bedoneby) {
+		if !abort {
+			retval = &line.Moves[0]
+		}
+		if abort || time.Now().After(BeDoneBy) {
 			retval.Score = score
 			Clock -= time.Since(start)
-			return retval
+			break
 		}
 	}
+        return retval
 }
