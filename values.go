@@ -144,3 +144,14 @@ var Value [7]int = [7]int{
 	900,
 	0,
 }
+
+var PValue [7]int = [7]int{
+	// value of the pieces with respect to phase (tapered eval)
+	0,
+	0,
+	1,
+	1,
+	2,
+	4,
+	0,
+}

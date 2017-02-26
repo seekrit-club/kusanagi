@@ -16,7 +16,19 @@ const MATE int = INFINITY - 10          // Value of a checkmate in 1
 var nodecount uint64
 
 func Evaluate(board *Board) int {
-	return MaterialCount(board, false)
+	phase := calcphase(board)
+	opening := MaterialCount(board, false)
+	endgame := MaterialCount(board, true)
+	return ((opening * (256 - phase)) + (endgame * phase)) / 256
+}
+
+func calcphase(board *Board) int {
+	TotalPhase := 24 // PawnPhase*16 + KnightPhase*4 + BishopPhase*4 + RookPhase*4 + QueenPhase*2
+	phase := TotalPhase
+	for _, i := range board.PieceList {
+		phase -= PValue[GetPiece(board.Data[i])]
+	}
+	return (phase*256 + (TotalPhase / 2)) / TotalPhase
 }
 
 func MaterialCount(b *Board, endgame bool) int {
