@@ -84,7 +84,7 @@ func GetPst(index, side byte, tableMg [64]int, tableEg [64]int, endgame bool) in
 
 func Quies(board *Board, alpha, beta int) int {
 	nodecount++
-	if abort || nodecount&1023 == 1023 && time.Now().After(BeDoneBy) {
+	if abort {
 		abort = true
 		return 0
 	}
@@ -119,8 +119,7 @@ func Quies(board *Board, alpha, beta int) int {
 
 func AlphaBeta(board *Board, depth, alpha, beta, mate int, pline *Line) int {
 	nodecount++
-	if abort || nodecount&1023 == 1023 && time.Now().After(BeDoneBy) {
-		abort = true
+	if abort {
 		return 0
 	}
 	legal := 0
@@ -175,25 +174,28 @@ func ThinkingOutput(depth, score int, start time.Time, pv *Line) {
 	fmt.Println(depth, score, int64(time.Since(start)/time.Millisecond)/10, nodecount, pv)
 }
 
+func SleepThread(board *Board, start time.Time) {
+	bedoneby := AllotTime(board)
+	fmt.Println("# allocated ", bedoneby)
+	time.Sleep(bedoneby)
+	abort = true
+}
+
 func FindMove(board *Board) *Move {
 	start := time.Now()
-	timetomove := AllotTime(board)
-	BeDoneBy := start.Add(timetomove)
-	nodecount = 0
 	abort = false
+	nodecount = 0
 	retval := new(Move)
+	go SleepThread(board, start)
 	for depth := 1; ; depth++ {
 		line := new(Line)
 		score := AlphaBeta(board, depth, -INFINITY, INFINITY, MATE, line)
 		ThinkingOutput(depth, score, start, line)
 		if !abort {
 			retval = &line.Moves[0]
-		}
-		if abort || time.Now().After(BeDoneBy) {
-			retval.Score = score
-			Clock -= time.Since(start)
+		} else {
 			break
 		}
 	}
-        return retval
+	return retval
 }
