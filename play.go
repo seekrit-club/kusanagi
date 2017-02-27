@@ -20,7 +20,11 @@ func Evaluate(board *Board) int {
 	phase := calcphase(board)
 	opening := MaterialCount(board, false)
 	endgame := MaterialCount(board, true)
-	return ((opening * (256 - phase)) + (endgame * phase)) / 256
+	score := ((opening * (256 - phase)) + (endgame * phase)) / 256
+	if board.ToMove == BLACK {
+		score = -score
+	}
+	return score
 }
 
 func calcphase(board *Board) int {
@@ -36,10 +40,10 @@ func MaterialCount(b *Board, endgame bool) int {
 	var retval int
 	for _, i := range b.PieceList {
 		if OnBoard(i) && GetPiece(b.Data[i]) != EMPTY {
-			if GetSide(b.Data[i]) == b.ToMove {
-				retval += Value[GetPiece(b.Data[i])] + Pst(GetPiece(b.Data[i]), b.ToMove, i, endgame)
+			if GetSide(b.Data[i]) == WHITE {
+				retval += Value[GetPiece(b.Data[i])] + Pst(GetPiece(b.Data[i]), WHITE, i, endgame)
 			} else {
-				retval -= (Value[GetPiece(b.Data[i])] + Pst(GetPiece(b.Data[i]), b.ToMove, i, endgame))
+				retval -= (Value[GetPiece(b.Data[i])] + Pst(GetPiece(b.Data[i]), BLACK, i, endgame))
 			}
 		}
 	}
@@ -195,10 +199,10 @@ func FindMove(board *Board) *Move {
 			break
 		}
 
-                if depth == 1 {
-                    Clock -= time.Since(start)
-                    go SleepThread(board, start)
-                }
+		if depth == 1 {
+			Clock -= time.Since(start)
+			go SleepThread(board, start)
+		}
 	}
 	return retval
 }
