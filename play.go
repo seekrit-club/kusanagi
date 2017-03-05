@@ -53,23 +53,23 @@ func MaterialCount(b *Board, endgame bool) int {
 func Pst(piece, side, index byte, endgame bool) int {
 	switch piece {
 	case PAWN:
-		return GetPst(index, side, pstPawnMg, pstPawnEg, endgame)
+		return GetPst(index, side, pstPawnMg[:], pstPawnEg[:], endgame)
 	case KNIGHT:
-		return GetPst(index, side, pstKnightMg, pstKnightEg, endgame)
+		return GetPst(index, side, pstKnightMg[:], pstKnightEg[:], endgame)
 	case BISHOP:
-		return GetPst(index, side, pstBishopMg, pstBishopEg, endgame)
+		return GetPst(index, side, pstBishopMg[:], pstBishopEg[:], endgame)
 	case ROOK:
-		return GetPst(index, side, pstRookMg, pstRookEg, endgame)
+		return GetPst(index, side, pstRookMg[:], pstRookEg[:], endgame)
 	case QUEEN:
-		return GetPst(index, side, pstQueenMg, pstQueenMg, endgame)
+		return GetPst(index, side, pstQueenMg[:], pstQueenEg[:], endgame)
 	case KING:
-		return GetPst(index, side, pstKingMg, pstKingEg, endgame)
+		return GetPst(index, side, pstKingMg[:], pstKingEg[:], endgame)
 	default:
 		return 0
 	}
 }
 
-func GetPst(index, side byte, tableMg [64]int, tableEg [64]int, endgame bool) int {
+func GetPst(index, side byte, tableMg []int, tableEg []int, endgame bool) int {
 	var table []int
 	if endgame {
 		table = tableEg[:]
