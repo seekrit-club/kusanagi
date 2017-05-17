@@ -6,10 +6,6 @@ import (
 	"time"
 )
 
-type Line struct {
-	Moves []Move
-}
-
 const INFINITY int = int(math.MaxInt32) // I win!
 const MATE int = INFINITY - 10          // Value of a checkmate in 1
 
@@ -120,44 +116,64 @@ func Quies(board *Board, alpha, beta int) int {
 	return alpha
 }
 
-func AlphaBeta(board *Board, depth, alpha, beta, mate int, pline *Line) int {
+func AlphaBeta(board *Board, depth, alpha, beta, mate int, pline *[]Move) int {
 	nodecount++
+
 	if abort {
 		return 0
 	}
+
 	legal := 0
+
 	if depth <= 0 {
+		*pline = nil
 		return Quies(board, alpha, beta)
 	}
-	line := new(Line)
+
+	var line []Move
+
 	moves := MoveGen(board)
+
 	for _, move := range moves {
+
 		undo := MakeMove(board, &move)
+
 		if Illegal(board) {
 			UnmakeMove(board, &move, undo)
 			continue
 		}
-		val := -AlphaBeta(board, depth-1, -beta, -alpha, mate-1, line)
+
+		line = nil
+
+		val := -AlphaBeta(board, depth-1, -beta, -alpha, mate-1, &line)
+
 		UnmakeMove(board, &move, undo)
+
 		if abort {
 			return 0
 		}
+
 		if val >= beta {
 			return beta
 		}
+
 		if val > alpha {
 			alpha = val
-			pline.Moves = append([]Move{move}, pline.Moves...)
-			line.Moves = append(pline.Moves, move)
+			*pline = append([]Move{move}, line...)
 		}
+
 		legal++
 	}
+
 	if legal == 0 {
+
 		if !InCheck(board) {
 			return 0
 		}
+
 		return -mate
 	}
+
 	return alpha
 }
 
@@ -173,7 +189,7 @@ func AllotTime(board *Board) time.Duration {
 	return (Clock/time.Duration(moves+1) - 20*time.Millisecond)
 }
 
-func ThinkingOutput(depth, score int, start time.Time, pv *Line) {
+func ThinkingOutput(depth, score int, start time.Time, pv []Move) {
 	fmt.Println(depth, score, int64(time.Since(start)/time.Millisecond)/10, nodecount, pv)
 }
 
@@ -190,11 +206,11 @@ func FindMove(board *Board) *Move {
 	nodecount = 0
 	retval := new(Move)
 	for depth := 1; ; depth++ {
-		line := new(Line)
-		score := AlphaBeta(board, depth, -INFINITY, INFINITY, MATE, line)
+		var line []Move
+		score := AlphaBeta(board, depth, -INFINITY, INFINITY, MATE, &line)
 		ThinkingOutput(depth, score, start, line)
 		if !abort {
-			retval = &line.Moves[0]
+			retval = &line[0]
 		} else {
 			break
 		}
