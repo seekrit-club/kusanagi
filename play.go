@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"sort"
 	"time"
 )
 
@@ -82,6 +83,19 @@ func GetPst(index, side byte, tableMg []int, tableEg []int, endgame bool) int {
 	return table[tableindex]
 }
 
+func MVVLVA(board *Board, move Move) int {
+	from_piece := GetPiece(board.Data[move.From])
+	to_piece := GetPiece(board.Data[move.To])
+
+	return Value[to_piece] - int(from_piece)
+}
+
+func SortMoves(board *Board, moves []Move) {
+	for i, m := range moves {
+		moves[i].Score = MVVLVA(board, m)
+	}
+}
+
 func Quies(board *Board, alpha, beta int) int {
 	nodecount++
 	if abort {
@@ -95,7 +109,13 @@ func Quies(board *Board, alpha, beta int) int {
 		alpha = eval
 	}
 	moves := FilterCaptures(MoveGen(board))
+
+	SortMoves(board, moves)
+
+	sort.Slice(moves, func(i, j int) bool { return moves[i].Score > moves[j].Score })
+
 	for _, move := range moves {
+
 		undo := MakeMove(board, &move)
 		if Illegal(board) {
 			UnmakeMove(board, &move, undo)
