@@ -154,6 +154,10 @@ func AlphaBeta(board *Board, depth, alpha, beta, mate int, pline *[]Move) int {
 
 	moves := MoveGen(board)
 
+	SortMoves(board, moves)
+
+	sort.Slice(moves, func(i, j int) bool { return moves[i].Score > moves[j].Score })
+
 	for _, move := range moves {
 
 		undo := MakeMove(board, &move)
