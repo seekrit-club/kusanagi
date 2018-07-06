@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/japanoise/kusanagi.svg?branch=master)](https://travis-ci.org/japanoise/kusanagi)
-[![codecov](https://codecov.io/gh/japanoise/kusanagi/branch/master/graph/badge.svg)](https://codecov.io/gh/japanoise/kusanagi)
-[![Report card](https://goreportcard.com/badge/github.com/japanoise/kusanagi)](https://goreportcard.com/report/github.com/japanoise/kusanagi)
+[![Build Status](https://travis-ci.org/seekrit-club/kusanagi.svg?branch=master)](https://travis-ci.org/seekrit-club/kusanagi)
+[![codecov](https://codecov.io/gh/seekrit-club/kusanagi/branch/master/graph/badge.svg)](https://codecov.io/gh/seekrit-club/kusanagi)
+[![Report card](https://goreportcard.com/badge/github.com/seekrit-club/kusanagi)](https://goreportcard.com/report/github.com/seekrit-club/kusanagi)
 
 # kusanagi
 
